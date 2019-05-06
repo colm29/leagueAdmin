@@ -12,7 +12,7 @@ def showDivisions():
 def newDivision():
     return 'This page will add a new division to the league'
 
-@app.route('/division/<int:division_id/edit')
+@app.route('/division/<int:division_id>/edit')
 def editDivision(division_id):
     return 'This page will edit division %s' %division_id
 
@@ -21,7 +21,7 @@ def deleteDivision(division_id):
     return 'This page will delete division %s from the league' %division_id
 
 @app.route('/division/<int:division_id>')
-@app.route('division/<int:division_id/teams')
+@app.route('/division/<int:division_id>/teams')
 def showTeams(division_id):
     return 'This page will show all teams for division %s' %division_id
 
@@ -30,11 +30,11 @@ def newTeam(division_id):
     return 'This page will add a new team to division %s' %division_id
 
 @app.route('/division/<int:division_id>/teams/<int:team_id>/edit')
-def editTeam(team_id):
+def editTeam(division_id,team_id):
     return 'This page will allow the user to edit team %s' %team_id
 
 @app.route('/division/<int:division_id>/teams/<int:team_id>/delete')
-def deleteTeam(team_id):
+def deleteTeam(division_id,team_id):
     return 'This page will allow the user to delete team %s' %team_id
 
 
