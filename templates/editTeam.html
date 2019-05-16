@@ -1,0 +1,16 @@
+<<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Edit Team</title>
+  </head>
+  <body>
+    <<form class="editUpdate" action={{url_for('editTeam', team.id = team_id)}} method="post">
+      Name:<input type="text" name="name" placeholder = {{team.name}}>
+      Nickname:<input type="text" name="nickname" placeholder = {{team.nickname}}>
+      Annual Membership:<input type="text" name="membership" placeholder = {{team.membership}}>
+      Email:<input type="text" name="email" placeholder = {{team.email}}>
+      <input type="Submit"  value="Change">
+    </form>
+  </body>
+</html>

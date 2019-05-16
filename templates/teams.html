@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Amateur Football League</title>
+  </head>
+  <body>
+      {% for t in teams %}
+        {{t.name}}</br>
+        {{t.nickname}}</br>
+        €{{t.membership}}</br>
+        {{t.email}}</br>
+        <a href={{url_for('editTeam',division_id = division_id, team_id = t.id)}}></a>Edit</br>
+        <a href={{url_for('deleteTeam',division_id = division_id, team_id = t.id)}}></a>Delete</br>
+        </br>
+      {% endfor %}
+  </body>
+</html>

@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Amateur Football League</title>
+  </head>
+  <body>
+      {% for d in divisions %}
+        <a href={{url_for('showTeams', division_id = d.id)}}>{{d.name}}</a>
+        </br>
+      {% endfor %}
+  </body>
+</html>

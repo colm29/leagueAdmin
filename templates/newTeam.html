@@ -1,0 +1,17 @@
+<<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Add a new Team</title>
+  </head>
+
+<h1>New team in division {{division_id}}</h1>
+  <body>
+    <form class="addUpdate" action={{url_for('newTeam', division_id = division_id)}} method="post">
+      <input type="text" name="name" placeholder="Team Name">
+      <input type="text" name="membership" placeholder = "Membership Fee">
+      <input type="submit" value="Create">
+
+    </form>
+  </body>
+</html>

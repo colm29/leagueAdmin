@@ -1,41 +1,71 @@
 #!/usr/bin/env python2
-from flask import Flask
+from flask import Flask, render_template, url_for, flash, jsonify
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from db_setup import Base, Division, Team
 
 app = Flask(__name__)
+
+engine = create_engine('sqlite:///league.db')
+Base.metadata.bind = engine
+
+DBSession = sessionmaker(bind=engine)
+session = DBSession()
+
+#API Endpoints
+@app.route('/divisions/JSON')
+def divisionsJSON():
+    divisions = session.query(Division).all()
+    return jsonify(Divisions = [d.serialize for d in divisions])
+
+@app.route('/divisions/<int:division_id>/teams/JSON')
+def teamsJSON(division_id):
+    division = session.query(Division).filter_by(id = division_id).one()
+    teams = session.query(Team).filter_by(division_id = division)
+    return jsonify(Teams = [t.serialize for t in teams])
+
+@app.route('/divisions/<int:division_id>/teams/<int:team_id>/JSON')
+def teamJSON(division_id, team_id):
+    division = session.query(Division).filter_by(id =  	    division_id).one()
+    team = session.query(Team).filter_by(team_id).one()
+    return jsonify(Teams = [team.serialize])
 
 @app.route('/')
 @app.route('/divisions')
 def showDivisions():
-    return 'This page will list all divisions in the league.'
+    divisions = session.query(Division).all()
+    return render_template('divisions.html', divisions = divisions)
 
 @app.route('/division/new')
 def newDivision():
-    return 'This page will add a new division to the league'
+    return render_template('newDivision.html')
 
 @app.route('/division/<int:division_id>/edit')
 def editDivision(division_id):
-    return 'This page will edit division %s' %division_id
+    return render_template('editDivision.html', division_id = division_id)
 
 @app.route('/division/<int:division_id>/delete')
 def deleteDivision(division_id):
-    return 'This page will delete division %s from the league' %division_id
+    return render_template('deleteDivision.html', division_id = division_id)
 
 @app.route('/division/<int:division_id>')
 @app.route('/division/<int:division_id>/teams')
 def showTeams(division_id):
-    return 'This page will show all teams for division %s' %division_id
+    division = session.query(Division).filter_by(id = division_id)
+    teams = session.query(Team).filter_by(division_id = division.id)
+    #return render_template('teams.html', division = division, teams = teams)
 
 @app.route('/division/<int:division_id>/teams/new')
 def newTeam(division_id):
-    return 'This page will add a new team to division %s' %division_id
+    return render_template('newTeam.html', division_id = division_id)
 
 @app.route('/division/<int:division_id>/teams/<int:team_id>/edit')
 def editTeam(division_id,team_id):
-    return 'This page will allow the user to edit team %s' %team_id
+    return render_template('editTeam.html', team_id = team_id)
 
 @app.route('/division/<int:division_id>/teams/<int:team_id>/delete')
 def deleteTeam(division_id,team_id):
-    return 'This page will allow the user to delete team %s' %team_id
+    return render_template('deleteTeam.html', team_id = team_id)
 
 
 if __name__ == '__main__':
