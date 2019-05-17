@@ -9,14 +9,22 @@ app = Flask(__name__)
 engine = create_engine('sqlite:///league.db')
 Base.metadata.bind = engine
 
-DBSession = sessionmaker(bind=engine)
-session = DBSession()
+def newSession():
+    DBSession = sessionmaker(bind=engine)
+    session = DBSession()
+    return session
 
 #API Endpoints
 @app.route('/divisions/JSON')
 def divisionsJSON():
-    divisions = session.query(Division).all()
-    return jsonify(Divisions = [d.serialize for d in divisions])
+    try:
+        session = newSession()
+        divisions = session.query(Division).all()
+        return jsonify(Divisions = [d.serialize for d in divisions])
+    except:
+        pass
+    finally:
+        session.close()
 
 @app.route('/divisions/<int:division_id>/teams/JSON')
 def teamsJSON(division_id):
@@ -33,8 +41,14 @@ def teamJSON(division_id, team_id):
 @app.route('/')
 @app.route('/divisions')
 def showDivisions():
-    divisions = session.query(Division).all()
-    return render_template('divisions.html', divisions = divisions)
+    try:
+        session = newSession()
+        divisions = session.query(Division).all()
+        return render_template('divisions.html', divisions = divisions)
+    except:
+        pass
+    finally:
+        session.close()
 
 @app.route('/division/new')
 def newDivision():
@@ -51,9 +65,15 @@ def deleteDivision(division_id):
 @app.route('/division/<int:division_id>')
 @app.route('/division/<int:division_id>/teams')
 def showTeams(division_id):
-    division = session.query(Division).filter_by(id = division_id)
-    teams = session.query(Team).filter_by(division_id = division.id)
-    #return render_template('teams.html', division = division, teams = teams)
+    try:
+        session = newSession()
+        division = session.query(Division).filter_by(id = division_id).one()
+        teams = session.query(Team).all()
+        return render_template('teams.html', division = division, teams = teams)
+    except:
+        pass
+    finally:
+        session.close()
 
 @app.route('/division/<int:division_id>/teams/new')
 def newTeam(division_id):

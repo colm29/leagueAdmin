@@ -10,8 +10,8 @@
         {{t.nickname}}</br>
         €{{t.membership}}</br>
         {{t.email}}</br>
-        <a href={{url_for('editTeam',division_id = division_id, team_id = t.id)}}></a>Edit</br>
-        <a href={{url_for('deleteTeam',division_id = division_id, team_id = t.id)}}></a>Delete</br>
+        <a href={{url_for('editTeam',division_id = t.division_id, team_id = t.id)}}>Edit</a></br>
+        <a href={{url_for('deleteTeam',division_id = t.division_id, team_id = t.id)}}>Delete</a></br>
         </br>
       {% endfor %}
   </body>
