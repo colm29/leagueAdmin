@@ -1,17 +1,19 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
     <title>Add a new Team</title>
   </head>
 
-<h1>New team in division {{division_id}}</h1>
+<h1>New team in {{division_id}}</h1>
   <body>
-    <form class="addUpdate" action={{url_for('newTeam', division_id = division_id)}} method="post">
+    <form class="addUpdate" action={{url_for('newTeam', division_id = division_id, name = name)}} method="post">
       <input type="text" name="name" placeholder="Team Name">
+      <input type="text" name="nickname" placeholder="Nickname">
       <input type="text" name="membership" placeholder = "Membership Fee">
+      <input type="text" name="email" placeholder = "Email Address">
       <input type="submit" value="Create">
-
     </form>
+    <a href = {{url_for('showTeams', division_id = division_id)}}>Cancel</a>
   </body>
 </html>

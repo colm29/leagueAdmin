@@ -5,7 +5,22 @@
     <title>Amateur Football League</title>
   </head>
   <body>
-      {% for t in teams %}
+    <!--MESSAGE FLASHING EXAMPLE -->
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+
+      <ul>
+      {% for message in messages %}
+      <li><strong>{{message}}</strong></li>
+      {% endfor %}
+      </ul>
+      {% endif %}
+      {% endwith %}
+      <a href = {{url_for('showDivisions')}}>Back to List Of Divisions</a>
+      </br>
+      <a href={{url_for('newTeam', division_id = division.id)}}>Create New Team</a></br></br>
+      <h1>{{division.name}} teams:</h1></br>
+        {% for t in teams %}
         {{t.name}}</br>
         {{t.nickname}}</br>
         €{{t.membership}}</br>
