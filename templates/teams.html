@@ -19,7 +19,6 @@
       <a href = {{url_for('showDivisions')}}>Back to List Of Divisions</a>
       </br>
       <a href={{url_for('newTeam', division_id = division.id)}}>Create New Team</a></br></br>
-      <h1>{{division.name}} teams:</h1></br>
         {% for t in teams %}
         {{t.name}}</br>
         {{t.nickname}}</br>
