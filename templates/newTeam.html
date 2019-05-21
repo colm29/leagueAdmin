@@ -5,9 +5,9 @@
     <title>Add a new Team</title>
   </head>
 
-<h1>New team in {{name}}</h1>
+<h1>New team in {{division_id}}</h1>
   <body>
-    <form class="addUpdate" action={{url_for('newTeam', division_id = division_id, name = name)}} method="post">
+    <form class="addUpdate" action={{url_for('newTeam', division_id = division_id)}} method="post">
       <input type="text" name="name" placeholder="Team Name">
       <input type="text" name="nickname" placeholder="Nickname">
       <input type="text" name="membership" placeholder = "Membership Fee">

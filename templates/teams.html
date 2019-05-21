@@ -18,7 +18,7 @@
       {% endwith %}
       <a href = {{url_for('showDivisions')}}>Back to List Of Divisions</a>
       </br>
-      <a href={{url_for('newTeam', division_id = division.id)}}>Create New Team</a></br></br>
+      <a href={{url_for('newTeam', division_id  = division_id)}}>Create New Team</a></br></br>
         {% for t in teams %}
         {{t.name}}</br>
         {{t.nickname}}</br>
@@ -28,5 +28,6 @@
         <a href={{url_for('deleteTeam',division_id = t.division_id, team_id = t.id)}}>Delete</a></br>
         </br>
       {% endfor %}
+
   </body>
 </html>
