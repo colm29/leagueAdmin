@@ -10,6 +10,14 @@ from sqlalchemy import create_engine
 
 Base = declarative_base()
 
+class User(Base):
+    __tablename__ = 'user'
+
+    id = Column(Integer, primary_key = True)
+    name = Column(String(100), nullable = False)
+    email = Column(String(80), nullable = False)
+    picture = Column(String(80), nullable = False)
+
 class Division(Base):
     __tablename__ = 'division'
 
@@ -32,11 +40,13 @@ class Team(Base):
 
     id = Column(Integer, primary_key = True)
     name = Column(String(80), nullable = False)
-    nickname = Column(String(80), nullable = True)
+    nickname = Column(String(80))
     membership = Column(Integer, nullable = False)
-    email = Column(String(80), nullable = True)
-    division_id = Column(Integer, ForeignKey('division.id'), nullable = False)
+    email = Column(String(80))
+    division_id = Column(Integer, ForeignKey('division.id'))
     division = relationship(Division)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship(User)
 
     @property
     def serialize(self):
@@ -52,7 +62,7 @@ class Team(Base):
 
 #########insert at end of file ##########
 
-engine = create_engine('sqlite:///league.db')
+engine = create_engine('sqlite:///leagueAdmin.db')
 
 Base.metadata.create_all(engine)
 

@@ -3,7 +3,7 @@ import pdb
 from flask import Flask, render_template, url_for, flash, jsonify, request, redirect,  make_response, session as login_session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from db_setup import Base, Division, Team
+from db_setup import Base, Division, Team, User
 import httplib2
 import requests
 import json
@@ -15,7 +15,7 @@ app = Flask(__name__)
 FBCLIENT_ID = json.loads(
     open('fbclientsecrets.json', 'r').read())['web']['app_id']
 
-engine = create_engine('sqlite:///league.db')
+engine = create_engine('sqlite:///leagueAdmin.db')
 Base.metadata.bind = engine
 
 def newSession():
@@ -135,10 +135,10 @@ def fbconnect():
     login_session['picture'] = data["data"]["url"]
 
     # see if user exists
-    """ user_id = getUserID(login_session['email'])
+    user_id = getUserID(login_session['email'])
     if not user_id:
         user_id = createUser(login_session) 
-    login_session['user_id'] = user_id """
+    login_session['user_id'] = user_id 
 
     output = ''
     output += '<h1>Welcome, '
@@ -226,7 +226,45 @@ def deleteTeam(division_id,team_id):
         session.close()
 
 
-    #user functions
+#user functions
+def getUserID(email):
+    try:
+        session = newSession()
+        user = session.query(User).filter_by(email = email).one()
+        return user.id
+    except:
+        return None
+    finally:
+        session.close()
+
+def getUserInfo(user_id):
+    try:
+        session = newSession()
+        user = session.query(User).filter_by(id = user_id).one()
+        if user.picture != login_session['picture']:
+            user.picture = login_session['picture']
+        elif user.name != login_session['username']:
+            user.name = login_session['username']
+        session.add(user)
+        session.commit()
+        return user
+    except:
+        return None
+    finally:
+        session.close()
+
+
+def createUser(login_session):
+    session = newSession()
+    newUser = User(name = login_session['username'], email = 
+        login_session['email'], picture = login_session
+            ['picture'])
+    session.add(newUser)
+    session.commit()
+    user = session.query(User).filter_by(email = login_session
+        ['email']).one()
+    return user.id
+
 
 
 if __name__ == '__main__':
