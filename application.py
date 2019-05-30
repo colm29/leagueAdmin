@@ -86,7 +86,7 @@ def fbconnect():
         response = make_response(json.dumps('Invalid state parameter'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response """
-    #pdb.set_trace()
+    
     access_token = request.data
     print "access token received %s " % access_token
 
@@ -152,13 +152,27 @@ def fbconnect():
     flash("Now logged in as %s" % login_session['username'])
     return output
 
+@app.route('/fbdisconnect')
+def fbdisconnect():
+    facebook_id = login_session['facebook_id']
+    # The access token must me included to successfully logout
+    access_token = login_session['access_token']
+    url = 'https://graph.facebook.com/%s/permissions?access_token=%s' % (facebook_id,access_token)
+    h = httplib2.Http()
+    result = h.request(url, 'DELETE')[1]
+    return "you have been logged out"
+
 @app.route('/division/<int:division_id>')
 @app.route('/division/<int:division_id>/teams')
 def showTeams(division_id):
     try:
         session = newSession()
         teams = session.query(Team).filter_by(division_id = division_id)
-        return render_template('teams.html', teams = teams, division_id = division_id)
+        #pdb.set_trace()
+        if login_session.get('user_id') is None:
+            return render_template('publicTeams.html', teams = teams, division_id = division_id)
+        else:
+            return render_template('teams.html', teams = teams, division_id = division_id)
     except:
         return 'There\'s been an error.. it seems.'
     finally:
@@ -170,7 +184,7 @@ def newTeam(division_id):
     try:
         session = newSession()
         if request.method == 'POST':
-            team = Team(name = request.form['name'], nickname = request.form['nickname'], membership = request.form['membership'], email = request.form['email'], division_id = division_id)
+            team = Team(name = request.form['name'], nickname = request.form['nickname'], membership = request.form['membership'], email = request.form['email'], division_id = division_id, user_id = login_session['user_id'])
             session.add(team)
             session.commit()
             flash('New Team Added!')
@@ -224,6 +238,28 @@ def deleteTeam(division_id,team_id):
         pass
     finally:
         session.close()
+
+# Disconnect based on provider
+@app.route('/disconnect')
+def disconnect():
+    if 'provider' in login_session:
+        """ if login_session['provider'] == 'google':
+            gdisconnect()
+            del login_session['gplus_id']
+            del login_session['access_token'] """
+        if login_session['provider'] == 'facebook':
+            fbdisconnect()
+            del login_session['facebook_id']
+        del login_session['username']
+        del login_session['email']
+        del login_session['picture']
+        del login_session['user_id']
+        del login_session['provider']
+        flash("You have successfully been logged out.")
+        return redirect(url_for('showDivisions'))
+    else:
+        flash("You were not logged in")
+        return redirect(url_for('showDivisions'))
 
 
 #user functions

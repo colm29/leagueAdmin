@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Amateur Football League</title>
+  </head>
+  <body>
+    <!--MESSAGE FLASHING EXAMPLE -->
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+
+      <ul>
+      {% for message in messages %}
+      <li><strong>{{message}}</strong></li>
+      {% endfor %}
+      </ul>
+      {% endif %}
+      {% endwith %}
+      <a href = {{url_for('showDivisions')}}>Back to List Of Divisions</a>
+      </br>
+        {% for t in teams %}
+        {{t.name}}</br>
+        {{t.nickname}}</br>
+        €{{t.membership}}</br>
+        {{t.email}}</br>
+      </br>
+      {% endfor %}
+
+  </body>
+</html>
