@@ -168,15 +168,40 @@ def showTeams(division_id):
     try:
         session = newSession()
         teams = session.query(Team).filter_by(division_id = division_id)
-        #pdb.set_trace()
-        if login_session.get('user_id') is None:
-            return render_template('publicTeams.html', teams = teams, division_id = division_id)
-        else:
+        if loggedIn():
             return render_template('teams.html', teams = teams, division_id = division_id)
-    except:
-        return 'There\'s been an error.. it seems.'
+        else:
+            return render_template('publicTeams.html', teams = teams, division_id = division_id)
+    except Exception as e:
+        return e.__doc__
     finally:
         session.close()
+
+""" @app.route('/division/<int:division_id>')
+@app.route('/division/<int:division_id>/teams')
+def showTeams(division_id):
+    session = newSession()
+    teams = session.query(Team).filter_by(division_id = division_id)
+    return render_template('teams.html', teams = teams, division_id = division_id)
+    session.close() """
+
+def loggedIn():
+    if login_session.get('user_id') is None:
+        return False
+    else:
+        return True
+
+@app.route('/division/<int:division_id>/teams/<int:team_id>/teamDetails')
+def showTeamDetails(division_id, team_id):
+    session = newSession()
+    team = session.query(Team).filter_by(id = team_id).one()
+    if loggedIn():
+        if login_session['user_id'] == team.user_id:
+            return render_template('teamDetails.html', team = team)
+        else:
+            return render_template('publicTeamDetails.html', team = team)
+    else:
+        return render_template('publicTeamDetails.html', team = team)
 
 
 @app.route('/division/<int:division_id>/teams/new', methods = ['GET', 'POST'])
@@ -202,6 +227,8 @@ def editTeam(division_id,team_id):
         session = newSession()
         division = session.query(Division).filter_by(id = division_id).one()
         team = session.query(Team).filter_by(id = team_id).one()
+        if team.user_id != login_session['user_id']:
+            return "<script>function myFunction() {alert('You are not authorised to edit this team.  Please create your own team in order to edit.');}</script><body onload='myFunction()''>"
         if request.method == 'POST':
             if request.form['name']:
                 team.name = request.form['name']
@@ -228,6 +255,8 @@ def deleteTeam(division_id,team_id):
         session = newSession()
         division = session.query(Division).filter_by(id = division_id).one()
         team = session.query(Team).filter_by(id = team_id).one()
+        if team.user_id != login_session['user_id']:
+            return "<script>function myFunction() {alert('You are not authorised to delete this team.  Please create your own team in order to delete.');}</script><body onload='myFunction()''>"
         if request.method == 'POST':
             session.delete(team)
             session.commit
@@ -253,7 +282,7 @@ def disconnect():
         del login_session['username']
         del login_session['email']
         del login_session['picture']
-        del login_session['user_id']
+        del login_session['""" user_id """']
         del login_session['provider']
         flash("You have successfully been logged out.")
         return redirect(url_for('showDivisions'))

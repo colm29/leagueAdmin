@@ -5,6 +5,7 @@
     <title>Amateur Football League</title>
   </head>
   <body>
+
     <!--MESSAGE FLASHING EXAMPLE -->
       {% with messages = get_flashed_messages() %}
       {% if messages %}
@@ -16,14 +17,14 @@
       </ul>
       {% endif %}
       {% endwith %}
-      <a href = {{url_for('showDivisions')}}>Back to List Of Divisions</a>
+      <a href = {{url_for('showTeams', division_id = team.division_id)}}>Back to List Of Teams</a>
       </br>
-      <a href={{url_for('newTeam', division_id  = division_id)}}>Create New Team</a></br></br>
-      {% for t in teams %}
-        <a href = {{url_for('showTeamDetails', division_id = division_id, team_id = t.id)}}>{{t.name}}</a>
+      {{team.name}}</br>
+      {{team.nickname}}</br>
+      €{{team.membership}}</br>
+      {{team.email}}</br>
+      <a href={{url_for('editTeam',division_id = team.division_id, team_id = team.id)}}>Edit</a></br>
+      <a href={{url_for('deleteTeam',division_id = team.division_id, team_id = team.id)}}>Delete</a></br>
       </br>
-      {% endfor %}
-
-
   </body>
 </html>

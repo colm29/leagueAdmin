@@ -18,13 +18,12 @@
       {% endwith %}
       <a href = {{url_for('showDivisions')}}>Back to List Of Divisions</a>
       </br>
-        {% for t in teams %}
-        {{t.name}}</br>
-        {{t.nickname}}</br>
-        €{{t.membership}}</br>
-        {{t.email}}</br>
+      </br>
+      {% for t in teams %}
+        <a href = {{url_for('showTeamDetails', division_id = division_id, team_id = t.id)}}>{{t.name}}</a>
       </br>
       {% endfor %}
+
 
   </body>
 </html>
