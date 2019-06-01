@@ -10,6 +10,13 @@
       Nickname:<input type="text" name="nickname" placeholder = "{{team.nickname}}">
       Annual Membership:<input type="text" name="membership" placeholder = {{team.membership}}>
       Email:<input type="text" name="email" placeholder = {{team.email}}>
+      Home:<input type="text" name="home" placeholder = {{team.home}}>
+      Description:<input type="text" name="description" placeholder = {{team.description}}>
+      <select name="division" placeholder ="Division">
+        {% for d in divisions %}
+          <option value={{d.id}} {% if team.division_id == d.id %} selected {% endif %}>{{d.name}}</option>
+        {% endfor %}
+      </select>
       <input type="Submit"  value="Change">
     </form>
     <a href = {{url_for('showTeams', division_id = team.division_id)}}>Cancel</a>

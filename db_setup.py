@@ -43,6 +43,8 @@ class Team(Base):
     nickname = Column(String(80))
     membership = Column(Integer, nullable = False)
     email = Column(String(80))
+    home = Column(String(100))
+    description = Column(String(500))
     division_id = Column(Integer, ForeignKey('division.id'))
     division = relationship(Division)
     user_id = Column(Integer, ForeignKey('user.id'))
@@ -56,13 +58,15 @@ class Team(Base):
             'name': self.name,
             'nickname': self.nickname,
             'membership': self.membership,
-            'email': self.email
+            'email': self.email,
+            'home': self.home,
+            'description': self.description
         }
 
 
 #########insert at end of file ##########
 
-engine = create_engine('sqlite:///leagueAdmin.db')
+engine = create_engine('sqlite:///amLeague.db')
 
 Base.metadata.create_all(engine)
 

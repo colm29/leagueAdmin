@@ -15,7 +15,7 @@ app = Flask(__name__)
 FBCLIENT_ID = json.loads(
     open('fbclientsecrets.json', 'r').read())['web']['app_id']
 
-engine = create_engine('sqlite:///leagueAdmin.db')
+engine = create_engine('sqlite:///amLeague.db')
 Base.metadata.bind = engine
 
 def newSession():
@@ -209,7 +209,7 @@ def newTeam(division_id):
     try:
         session = newSession()
         if request.method == 'POST':
-            team = Team(name = request.form['name'], nickname = request.form['nickname'], membership = request.form['membership'], email = request.form['email'], division_id = division_id, user_id = login_session['user_id'])
+            team = Team(name = request.form['name'], nickname = request.form['nickname'], membership = request.form['membership'], email = request.form['email'], home = request.form['home'], description = request.form['description'], division_id = division_id, user_id = login_session['user_id'])
             session.add(team)
             session.commit()
             flash('New Team Added!')
@@ -226,6 +226,7 @@ def editTeam(division_id,team_id):
     try:
         session = newSession()
         division = session.query(Division).filter_by(id = division_id).one()
+        divisions = session.query(Division).all()
         team = session.query(Team).filter_by(id = team_id).one()
         if team.user_id != login_session['user_id']:
             return "<script>function myFunction() {alert('You are not authorised to edit this team.  Please create your own team in order to edit.');}</script><body onload='myFunction()''>"
@@ -238,14 +239,18 @@ def editTeam(division_id,team_id):
                 team.membership = request.form['membership']
             if request.form['email']:
                 team.email = request.form['email']
+            if request.form['home']:
+                team.email = request.form['home']
+            if request.form['description']:
+                team.email = request.form['description']
+            if request.form['division']:
+                team.division_id = request.form['division']
             session.add(team)
             session.commit()
             flash('Team Updated!')
             return redirect(url_for('showTeams', division_id = division_id))
         else:
-            return render_template('editTeam.html', division = division, team = team)
-    except:
-        pass
+            return render_template('editTeam.html', division = division, divisions = divisions,  team = team)
     finally:
         session.close()
 

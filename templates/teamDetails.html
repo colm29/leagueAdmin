@@ -23,6 +23,8 @@
       {{team.nickname}}</br>
       €{{team.membership}}</br>
       {{team.email}}</br>
+      {{team.home}}</br>
+      {{team.description}}</br>
       <a href={{url_for('editTeam',division_id = team.division_id, team_id = team.id)}}>Edit</a></br>
       <a href={{url_for('deleteTeam',division_id = team.division_id, team_id = team.id)}}>Delete</a></br>
       </br>
