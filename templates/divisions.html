@@ -8,7 +8,7 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
+    <link rel='stylesheet' href='/static/style.css'>
   </head>
   <body>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -35,25 +35,29 @@
       {% endwith %}
 
 
-  <div class="container-fluid">
-    <div class ='row'>
-      <div class='col-8 offset-2'>
-        <div class='card'>
-            <div class="row">
-              <div class="col-3 offset-2">
-                <h5 class='card-title'>Divisions</h5>
-                {% for d in divisions %}
-                  <a href={{url_for('showTeams', division_id = d.id)}}>{{d.name}}</a></br>
-                  {% endfor %}
+  <div class="container">
+    <div class='jumbotron'>
+      <div class ='row'>
+        <div class='col-10 offset-1'>
+          <div class='card'>
+              <div class="row">
+                <div class="col-3 offset-1">
+                  <h5 class='card-title'>Divisions</h5>
+                  <div class="list-group">
+                    {% for d in divisions %}
+                      <a href={{url_for('showTeams', division_id = d.id)}} class="list-group-item list-group-item-action">{{d.name}}</a>
+                    {% endfor %}
+                  </div>
                 </div>
-                <div class="col-3">
-                  <h5 class='card-title'>Select a division to view its teams</h5>
-                </div>
+              <div class="col-3">
+                <h5 class='card-title'>Teams</h5>
               </div>
             </div>
           </div>
         </div>
       </div>
+    </div>
+  </div>
 
 
 

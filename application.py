@@ -12,8 +12,11 @@ import string
 
 app = Flask(__name__)
 
-FBCLIENT_ID = json.loads(
+FBAPP_ID = json.loads(
     open('fbclientsecrets.json', 'r').read())['web']['app_id']
+
+FBAPP_SECRET= json.loads(
+        open('fbclientsecrets.json', 'r').read())['web']['app_secret']
 
 engine = create_engine('sqlite:///league.db')
 Base.metadata.bind = engine
@@ -59,17 +62,20 @@ def teamJSON(division_id, team_id):
     finally:
         session.close()
 
+# End of JSON API Section
 
+#Function for initial page - show all categories(Divisions in Football League)
 @app.route('/')
 @app.route('/divisions')
 def showDivisions():
     try:
-        session = newSession()
-        divisions = session.query(Division).all()
+        session = newSession() # creates a new session
+        divisions = session.query(Division).order_by(Division.rank).all()
         return render_template('divisions.html', divisions = divisions)
     finally:
-        session.close()
+        session.close() # closes new session to avoid error about objects created in a thread can only be used in that same thread
 
+#Function to show all teams (items) in a Division
 @app.route('/division/<int:division_id>')
 @app.route('/division/<int:division_id>/teams')
 def showTeams(division_id):
@@ -78,41 +84,119 @@ def showTeams(division_id):
         teams = session.query(Team).filter_by(division_id = division_id)
         division = session.query(Division).filter_by(id = division_id).one()
         divisions = session.query(Division).all()
-        if loggedIn():
+        if loggedIn(): # can create a new team if logged in, or edit/delete depending on auth
             return render_template('teams.html', teams = teams, division = division, divisions = divisions)
         else:
             return render_template('publicTeams.html', teams = teams, division = division, divisions = divisions)
     finally:
         session.close()
 
+#Function to show selected team details
+@app.route('/division/<int:division_id>/teams/<int:team_id>/teamDetails')
+def showTeamDetails(division_id, team_id):
+    session = newSession()
+    team = session.query(Team).filter_by(id = team_id).one()
+    if login_session.get['user_id'] == team.user_id:
+        return render_template('teamDetails.html', team = team)
+    else:
+        return render_template('publicTeamDetails.html', team = team)
+
+#Function to add new team - any logged in user can do this
+@app.route('/division/<int:division_id>/teams/new', methods = ['GET', 'POST'])
+def newTeam(division_id):
+    try:
+        session = newSession()
+        if not loggedIn():
+            return "<script>function myFunction() {alert('You are not authorised to create a new team.  Please log in to create a new team.');}</script><body onload='myFunction()''>"
+        if request.method == 'POST':
+            team = Team(name = request.form['name'], nickname = request.form['nickname'], membership = request.form['membership'], email = request.form['email'], home = request.form['home'], description = request.form['description'], division_id = division_id, user_id = login_session['user_id'])
+            session.add(team)
+            session.commit()
+            flash('New Team Added!')
+            return redirect(url_for('showTeams', division_id = division_id))
+        else:
+            divisions = session.query(Division).all()
+            return render_template('newTeam.html', division_id = division_id, divisions = divisions)
+    finally:
+        session.close()
+
+#Function to edit team - only available to user who created team
+@app.route('/division/<int:division_id>/teams/<int:team_id>/edit', methods = ['POST','GET'])
+def editTeam(division_id,team_id):
+    try:
+        session = newSession()
+        division = session.query(Division).filter_by(id = division_id).one()
+        divisions = session.query(Division).all()
+        team = session.query(Team).filter_by(id = team_id).one()
+        if team.user_id != login_session['user_id']: # in case of access by URL
+            return "<script>function myFunction() {alert('You are not authorised to edit this team.  Please create your own team in order to edit.');}</script><body onload='myFunction()''>"
+        if request.method == 'POST':
+            if request.form['name']:
+                team.name = request.form['name']
+            if request.form['nickname']:
+                team.nickname = request.form['nickname']
+            if request.form['membership']:
+                team.membership = request.form['membership']
+            if request.form['email']:
+                team.email = request.form['email']
+            if request.form['home']:
+                team.email = request.form['home']
+            if request.form['description']:
+                team.email = request.form['description']
+            if request.form['division']:
+                team.division_id = request.form['division']
+            session.add(team)
+            session.commit()
+            flash('Team Updated!')
+            return redirect(url_for('showTeams', division_id = division_id))
+        else:
+            return render_template('editTeam.html', division = division, divisions = divisions,  team = team)
+    finally:
+        session.close()
+
+#Function to delete team - only available to user who created team
+@app.route('/division/<int:division_id>/teams/<int:team_id>/delete', methods = ['POST','GET'])
+def deleteTeam(division_id,team_id):
+    try:
+        session = newSession()
+        division = session.query(Division).filter_by(id = division_id).one()
+        team = session.query(Team).filter_by(id = team_id).one()
+        if team.user_id != login_session['user_id']: # in case of access by URL
+            return "<script>function myFunction() {alert('You are not authorised to delete this team.  Please create your own team in order to delete.');}</script><body onload='myFunction()''>"
+        if request.method == 'POST':
+            session.delete(team)
+            session.commit
+            flash('Team Deleted!')
+        else:
+            return render_template('deleteTeam.html', division = division, team = team)
+    except:
+        pass
+    finally:
+        session.close()
+
+#Login Page Function avoids hard coding front end with client codes and passes state string
 @app.route('/login')
 def showLogin():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in xrange(32))
     login_session['state'] = state
-    # return "The current session state is %s" % login_session['state']
-    return render_template('login.html')
+    return render_template('login.html', STATE = state, fbclient_id = FBAPP_ID)
 
+#facebook token exchange function - if successful populates login_session with user details
 @app.route('/fbconnect', methods =['POST'])
 def fbconnect():
-    """ if request.args.get('state') != login_session['state']:
+    if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter'), 401)
         response.headers['Content-Type'] = 'application/json'
-        return response """
+        return response
     
     access_token = request.data
     print "access token received %s " % access_token
 
-
-    app_id = json.loads(open('fbclientsecrets.json', 'r').read())[
-        'web']['app_id']
-    app_secret = json.loads(
-        open('fbclientsecrets.json', 'r').read())['web']['app_secret']
     url = 'https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=%s&client_secret=%s&fb_exchange_token=%s' % (
-        app_id, app_secret, access_token)
+        FBAPP_ID, FBAPP_SECRET, access_token)
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
-
 
     # Use token to get user info from API
     userinfo_url = "https://graph.facebook.com/v3.3/me"
@@ -151,8 +235,10 @@ def fbconnect():
     user_id = getUserID(login_session['email'])
     if not user_id:
         user_id = createUser(login_session) 
-    login_session['user_id'] = user_id 
+    login_session['user_id'] = user_id
+    updateUser(user_id) #updates the username and picture for a stored user if they have changed
 
+    #Output HTML returned
     output = ''
     output += '<h1>Welcome, '
     output += login_session['username']
@@ -165,6 +251,7 @@ def fbconnect():
     flash("Now logged in as %s" % login_session['username'])
     return output
 
+
 @app.route('/fbdisconnect')
 def fbdisconnect():
     facebook_id = login_session['facebook_id']
@@ -175,102 +262,17 @@ def fbdisconnect():
     result = h.request(url, 'DELETE')[1]
     return "you have been logged out"
 
-
+#Function to check if user is logged in
 def loggedIn():
     if login_session.get('user_id') is None:
         return False
     else:
         return True
 
-@app.route('/division/<int:division_id>/teams/<int:team_id>/teamDetails')
-def showTeamDetails(division_id, team_id):
-    session = newSession()
-    team = session.query(Team).filter_by(id = team_id).one()
-    if loggedIn():
-        if login_session['user_id'] == team.user_id:
-            return render_template('teamDetails.html', team = team)
-        else:
-            return render_template('publicTeamDetails.html', team = team)
-    else:
-        return render_template('publicTeamDetails.html', team = team)
-
-
-@app.route('/division/<int:division_id>/teams/new', methods = ['GET', 'POST'])
-def newTeam(division_id):
-    try:
-        session = newSession()
-        if request.method == 'POST':
-            team = Team(name = request.form['name'], nickname = request.form['nickname'], membership = request.form['membership'], email = request.form['email'], home = request.form['home'], description = request.form['description'], division_id = division_id, user_id = login_session['user_id'])
-            session.add(team)
-            session.commit()
-            flash('New Team Added!')
-            return redirect(url_for('showTeams', division_id = division_id))
-        else:
-            divisions = session.query(Division).all()
-            return render_template('newTeam.html', division_id = division_id, divisions = divisions)
-    finally:
-        session.close()
-
-@app.route('/division/<int:division_id>/teams/<int:team_id>/edit', methods = ['POST','GET'])
-def editTeam(division_id,team_id):
-    try:
-        session = newSession()
-        division = session.query(Division).filter_by(id = division_id).one()
-        divisions = session.query(Division).all()
-        team = session.query(Team).filter_by(id = team_id).one()
-        if team.user_id != login_session['user_id']:
-            return "<script>function myFunction() {alert('You are not authorised to edit this team.  Please create your own team in order to edit.');}</script><body onload='myFunction()''>"
-        if request.method == 'POST':
-            if request.form['name']:
-                team.name = request.form['name']
-            if request.form['nickname']:
-                team.nickname = request.form['nickname']
-            if request.form['membership']:
-                team.membership = request.form['membership']
-            if request.form['email']:
-                team.email = request.form['email']
-            if request.form['home']:
-                team.email = request.form['home']
-            if request.form['description']:
-                team.email = request.form['description']
-            if request.form['division']:
-                team.division_id = request.form['division']
-            session.add(team)
-            session.commit()
-            flash('Team Updated!')
-            return redirect(url_for('showTeams', division_id = division_id))
-        else:
-            return render_template('editTeam.html', division = division, divisions = divisions,  team = team)
-    finally:
-        session.close()
-
-@app.route('/division/<int:division_id>/teams/<int:team_id>/delete', methods = ['POST','GET'])
-def deleteTeam(division_id,team_id):
-    try:
-        session = newSession()
-        division = session.query(Division).filter_by(id = division_id).one()
-        team = session.query(Team).filter_by(id = team_id).one()
-        if team.user_id != login_session['user_id']:
-            return "<script>function myFunction() {alert('You are not authorised to delete this team.  Please create your own team in order to delete.');}</script><body onload='myFunction()''>"
-        if request.method == 'POST':
-            session.delete(team)
-            session.commit
-            flash('Team Deleted!')
-        else:
-            return render_template('deleteTeam.html', division = division, team = team)
-    except:
-        pass
-    finally:
-        session.close()
-
 # Disconnect based on provider
 @app.route('/disconnect')
 def disconnect():
     if 'provider' in login_session:
-        """ if login_session['provider'] == 'google':
-            gdisconnect()
-            del login_session['gplus_id']
-            del login_session['access_token'] """
         if login_session['provider'] == 'facebook':
             fbdisconnect()
             del login_session['facebook_id']
@@ -284,7 +286,6 @@ def disconnect():
     else:
         flash("You were not logged in")
         return redirect(url_for('showDivisions'))
-
 
 #user functions
 def getUserID(email):
@@ -310,6 +311,19 @@ def getUserInfo(user_id):
         return user
     except:
         return None
+    finally:
+        session.close()
+
+def updateUser(user_id):
+    try:
+        session = newSession()
+        user = session.query(User).filter_by(id = user_id).one()
+        if user.picture != login_session['picture']:
+            user.picture = login_session['picture']
+        elif user.name != login_session['username']:
+            user.name = login_session['username']
+        session.add(user)
+        session.commit()
     finally:
         session.close()
 
