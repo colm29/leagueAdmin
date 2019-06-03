@@ -15,7 +15,7 @@ app = Flask(__name__)
 FBCLIENT_ID = json.loads(
     open('fbclientsecrets.json', 'r').read())['web']['app_id']
 
-engine = create_engine('sqlite:///amLeague.db')
+engine = create_engine('sqlite:///league.db')
 Base.metadata.bind = engine
 
 def newSession():
