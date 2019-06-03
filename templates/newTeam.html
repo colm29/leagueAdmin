@@ -1,19 +1,40 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
+    <title>Amateur Football Soccer League Dublin Ireland</title>
+    <!-- Required meta tags -->
     <meta charset="utf-8">
-    <title>Add a new Team</title>
-  </head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-<h1>New team in {{division_id}}</h1>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  </head>
   <body>
-    <form class="addUpdate" action={{url_for('newTeam', division_id = division_id)}} method="post">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href={{url_for('showDivisions')}}>Amateur Football League</a>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">  </div>
+  <ul class="nav navbar-nav navbar-right">
+       {% if 'user_id' not in session %}
+        <li><a href={{url_for('showLogin')}} class="btn btn-primary">Log In</a></li>
+      {% else %}
+        <li><a href={{url_for('disconnect')}} class="btn btn-primary">Log Out</a></li>
+      {% endif %}
+    </ul>
+</nav>
+  <h5>Add a New Team</h5>
+    <form action={{url_for('newTeam', division_id = division_id)}} method="post">
       <input type="text" name="name" placeholder="Team Name">
       <input type="text" name="nickname" placeholder="Nickname">
       <input type="text" name="membership" placeholder = "Membership Fee">
       <input type="text" name="email" placeholder = "Email Address">
       <input type="text" name="home" placeholder = "Home">
       <input type="text" name="description" placeholder ="Description">
+      <select name="division" placeholder ="Division">
+        {% for d in divisions %}
+          <option value={{d.id}} {% if division_id == d.id %} selected {% endif %}>{{d.name}}</option>
+        {% endfor %}
+      </select>
       <input type="submit" value="Create">
     </form>
     <a href = {{url_for('showTeams', division_id = division_id)}}>Cancel</a>

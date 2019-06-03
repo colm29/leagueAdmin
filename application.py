@@ -67,8 +67,21 @@ def showDivisions():
         session = newSession()
         divisions = session.query(Division).all()
         return render_template('divisions.html', divisions = divisions)
-    except:
-        pass
+    finally:
+        session.close()
+
+@app.route('/division/<int:division_id>')
+@app.route('/division/<int:division_id>/teams')
+def showTeams(division_id):
+    try:
+        session = newSession()
+        teams = session.query(Team).filter_by(division_id = division_id)
+        division = session.query(Division).filter_by(id = division_id).one()
+        divisions = session.query(Division).all()
+        if loggedIn():
+            return render_template('teams.html', teams = teams, division = division, divisions = divisions)
+        else:
+            return render_template('publicTeams.html', teams = teams, division = division, divisions = divisions)
     finally:
         session.close()
 
@@ -162,28 +175,6 @@ def fbdisconnect():
     result = h.request(url, 'DELETE')[1]
     return "you have been logged out"
 
-@app.route('/division/<int:division_id>')
-@app.route('/division/<int:division_id>/teams')
-def showTeams(division_id):
-    try:
-        session = newSession()
-        teams = session.query(Team).filter_by(division_id = division_id)
-        if loggedIn():
-            return render_template('teams.html', teams = teams, division_id = division_id)
-        else:
-            return render_template('publicTeams.html', teams = teams, division_id = division_id)
-    except Exception as e:
-        return e.__doc__
-    finally:
-        session.close()
-
-""" @app.route('/division/<int:division_id>')
-@app.route('/division/<int:division_id>/teams')
-def showTeams(division_id):
-    session = newSession()
-    teams = session.query(Team).filter_by(division_id = division_id)
-    return render_template('teams.html', teams = teams, division_id = division_id)
-    session.close() """
 
 def loggedIn():
     if login_session.get('user_id') is None:
@@ -215,9 +206,8 @@ def newTeam(division_id):
             flash('New Team Added!')
             return redirect(url_for('showTeams', division_id = division_id))
         else:
-            return render_template('newTeam.html', division_id = division_id)
-    except:
-        return 'There has been an error...I think.'
+            divisions = session.query(Division).all()
+            return render_template('newTeam.html', division_id = division_id, divisions = divisions)
     finally:
         session.close()
 
@@ -287,7 +277,7 @@ def disconnect():
         del login_session['username']
         del login_session['email']
         del login_session['picture']
-        del login_session['""" user_id """']
+        del login_session['user_id']
         del login_session['provider']
         flash("You have successfully been logged out.")
         return redirect(url_for('showDivisions'))

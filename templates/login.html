@@ -64,11 +64,10 @@ function sendTokenToServer() {
 </script>
 
 
+
 <!--<fb:login-button scope="public_profile,email" onlogin="sendTokenToServer();">
 </fb:login-button>-->
 <div class="fb-login-button" data-width="" data-size="medium" data-button-type="continue_with"  data-use-continue-as="true" data-scope="public_profile,email" data-onlogin="sendTokenToServer();"></div>
-
-<a href={{url_for('disconnect')}}>logout</a>
-
-  </body>
+<div id ='result'></div>
+</body>
 </html>
