@@ -12,10 +12,10 @@ import string
 
 app = Flask(__name__)
 
-FBAPP_ID = json.loads(
+FB_ID = json.loads(
     open('fbclientsecrets.json', 'r').read())['web']['app_id']
 
-FBAPP_SECRET= json.loads(
+FB_SECRET= json.loads(
         open('fbclientsecrets.json', 'r').read())['web']['app_secret']
 
 engine = create_engine('sqlite:///league.db')
@@ -180,7 +180,7 @@ def showLogin():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in xrange(32))
     login_session['state'] = state
-    return render_template('login.html', STATE = state, fbclient_id = FBAPP_ID)
+    return render_template('login.html', STATE = state, fbclient_id = FB_ID)
 
 #facebook token exchange function - if successful populates login_session with user details
 @app.route('/fbconnect', methods =['POST'])
@@ -188,13 +188,13 @@ def fbconnect():
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter'), 401)
         response.headers['Content-Type'] = 'application/json'
-        return response
+        return response 
     
     access_token = request.data
     print "access token received %s " % access_token
 
     url = 'https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=%s&client_secret=%s&fb_exchange_token=%s' % (
-        FBAPP_ID, FBAPP_SECRET, access_token)
+        FB_ID, FB_SECRET, access_token)
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
 
