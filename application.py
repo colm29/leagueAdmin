@@ -1,4 +1,5 @@
 #!/usr/bin/env python2
+# -*- coding: utf-8 -*-
 import pdb
 from flask import Flask, render_template, url_for, flash, jsonify, request, redirect,  make_response, session as login_session
 from sqlalchemy import create_engine
@@ -38,33 +39,29 @@ def divisionsJSON():
     finally:
         session.close()
 
-@app.route('/divisions/<int:division_id>/teams/JSON')
-def teamsJSON(division_id):
+@app.route('/divisions/<string:division_name>/teams/JSON')
+def teamsJSON(division_name):
     try:
         session = newSession()
-        division = session.query(Division).filter_by(id = division_id).one()
-        teams = session.query(Team).filter_by(division_id = division)
+        division = session.query(Division).filter_by(name = division_name).one()
+        teams = session.query(Team).filter_by(division_id = division.id)
         return jsonify(Teams = [t.serialize for t in teams])
-    except:
-        pass
     finally:
         session.close()
 
-@app.route('/divisions/<int:division_id>/teams/<int:team_id>/JSON')
-def teamJSON(division_id, team_id):
+@app.route('/divisions/<string:division_name>/teams/<string:team_name>/JSON')
+def teamJSON(division_name, team_name):
     try:
         session = newSession()
-        division = session.query(Division).filter_by(id = division_id).one()
-        team = session.query(Team).filter_by(team_id).one()
+        division = session.query(Division).filter_by(name = division_name).one()
+        team = session.query(Team).filter_by(name = team_name).one()
         return jsonify(Teams = [team.serialize])
-    except:
-        pass
     finally:
         session.close()
 
 # End of JSON API Section
 
-#Function for initial page - show all categories(Divisions in Football League)
+#Route for initial page - show all categories(Divisions in Football League)
 @app.route('/')
 @app.route('/divisions')
 def showDivisions():
@@ -76,14 +73,14 @@ def showDivisions():
         session.close() # closes new session to avoid error about objects created in a thread can only be used in that same thread
 
 #Function to show all teams (items) in a Division
-@app.route('/division/<int:division_id>')
-@app.route('/division/<int:division_id>/teams')
-def showTeams(division_id):
+@app.route('/division/<string:division_name>')
+@app.route('/division/<string:division_name>/teams')
+def showTeams(division_name):
     try:
         session = newSession()
-        teams = session.query(Team).filter_by(division_id = division_id)
-        division = session.query(Division).filter_by(id = division_id).one()
-        divisions = session.query(Division).all()
+        division = session.query(Division).filter_by(name = division_name).one()
+        teams = session.query(Team).filter_by(division_id = division.id)
+        divisions = session.query(Division).order_by(Division.rank).all()
         if loggedIn(): # can create a new team if logged in, or edit/delete depending on auth
             return render_template('teams.html', teams = teams, division = division, divisions = divisions)
         else:
@@ -92,18 +89,18 @@ def showTeams(division_id):
         session.close()
 
 #Function to show selected team details
-@app.route('/division/<int:division_id>/teams/<int:team_id>/teamDetails')
-def showTeamDetails(division_id, team_id):
+@app.route('/division/<string:division_name>/teams/<path:team_name>/teamDetails')
+def showTeamDetails(division_name, team_name):
     session = newSession()
-    team = session.query(Team).filter_by(id = team_id).one()
-    if login_session.get['user_id'] == team.user_id:
-        return render_template('teamDetails.html', team = team)
+    team = session.query(Team).filter_by(name = team_name).one()
+    if login_session.get('user_id') == team.user_id:
+        return render_template('teamDetails.html', team = team, division_name = division_name)
     else:
-        return render_template('publicTeamDetails.html', team = team)
+        return render_template('publicTeamDetails.html', team = team, division_name = division_name)
 
 #Function to add new team - any logged in user can do this
-@app.route('/division/<int:division_id>/teams/new', methods = ['GET', 'POST'])
-def newTeam(division_id):
+@app.route('/division/<string:division_name>/teams/new', methods = ['GET', 'POST'])
+def newTeam(division_name):
     try:
         session = newSession()
         if not loggedIn():
@@ -113,21 +110,22 @@ def newTeam(division_id):
             session.add(team)
             session.commit()
             flash('New Team Added!')
-            return redirect(url_for('showTeams', division_id = division_id))
+            return redirect(url_for('showTeams', division_name = division_name))
         else:
             divisions = session.query(Division).all()
+            division_id = session.query(Division.id).filter_by(name = division_name).one()
             return render_template('newTeam.html', division_id = division_id, divisions = divisions)
     finally:
         session.close()
 
 #Function to edit team - only available to user who created team
-@app.route('/division/<int:division_id>/teams/<int:team_id>/edit', methods = ['POST','GET'])
-def editTeam(division_id,team_id):
+@app.route('/division/<string:division_name>/teams/<string:team_name>/edit', methods = ['POST','GET'])
+def editTeam(division_name,team_name):
     try:
         session = newSession()
-        division = session.query(Division).filter_by(id = division_id).one()
+        division = session.query(Division).filter_by(name = division_name).one()
         divisions = session.query(Division).all()
-        team = session.query(Team).filter_by(id = team_id).one()
+        team = session.query(Team).filter_by(name = team_name).one()
         if team.user_id != login_session['user_id']: # in case of access by URL
             return "<script>function myFunction() {alert('You are not authorised to edit this team.  Please create your own team in order to edit.');}</script><body onload='myFunction()''>"
         if request.method == 'POST':
@@ -148,19 +146,19 @@ def editTeam(division_id,team_id):
             session.add(team)
             session.commit()
             flash('Team Updated!')
-            return redirect(url_for('showTeams', division_id = division_id))
+            return redirect(url_for('showTeams', division_name = division_name))
         else:
             return render_template('editTeam.html', division = division, divisions = divisions,  team = team)
     finally:
         session.close()
 
 #Function to delete team - only available to user who created team
-@app.route('/division/<int:division_id>/teams/<int:team_id>/delete', methods = ['POST','GET'])
-def deleteTeam(division_id,team_id):
+@app.route('/division/<string:division_name>/teams/<string:team_name>/delete', methods = ['POST','GET'])
+def deleteTeam(division_name,team_name):
     try:
         session = newSession()
-        division = session.query(Division).filter_by(id = division_id).one()
-        team = session.query(Team).filter_by(id = team_id).one()
+        division = session.query(Division).filter_by(name = division_name).one()
+        team = session.query(Team).filter_by(name = team_name).one()
         if team.user_id != login_session['user_id']: # in case of access by URL
             return "<script>function myFunction() {alert('You are not authorised to delete this team.  Please create your own team in order to delete.');}</script><body onload='myFunction()''>"
         if request.method == 'POST':
