@@ -6,14 +6,14 @@
   <div class="col-3 offset-2">
     <h5>Divisions</h5>
     {% for d in divisions %}
-    <a href={{url_for('showTeams', division_id = d.id)}}>{{d.name}}</a>
+    <a href={{url_for('showTeams', division_name = d.name)}}>{{d.name}}</a>
     </br>
     {% endfor %}
   </div>
   <div class='col-3'>
     <h5>{{division.name}} Teams</h5>
     {% for t in teams %}
-    <a href={{url_for('showTeamDetails', division_id = t.division_id, team_id = t.id)}}>{{t.name}}</a>
+    <a href={{url_for('showTeamDetails', division_name = division.name, team_name = t.name)}}>{{t.name}}</a>
     </br>
     {% endfor %}
   </div>

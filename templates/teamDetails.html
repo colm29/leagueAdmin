@@ -34,7 +34,7 @@
       </ul>
       {% endif %}
       {% endwith %}
-      <a href = {{url_for('showTeams', division_id = team.division_id)}}>Back to List Of Teams</a>
+      <a href = {{url_for('showTeams', division_name = division_name)}}>Back to List Of Teams</a>
       </br>
       {{team.name}}</br>
       {{team.nickname}}</br>
@@ -42,8 +42,8 @@
       {{team.email}}</br>
       {{team.home}}</br>
       {{team.description}}</br>
-      <a href={{url_for('editTeam',division_id = team.division_id, team_id = team.id)}}>Edit</a></br>
-      <a href={{url_for('deleteTeam',division_id = team.division_id, team_id = team.id)}}>Delete</a></br>
+      <a href={{url_for('editTeam',division_name = division_name, team_name = team.name)}}>Edit</a></br>
+      <a href={{url_for('deleteTeam',division_name = division_name, team_name = team.name)}}>Delete</a></br>
       </br>
   </body>
 </html>

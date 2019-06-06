@@ -34,7 +34,7 @@
       </ul>
       {% endif %}
       {% endwith %}
-      <a href = {{url_for('showTeams', division_id = team.division_id)}}>Back to List Of Teams</a>
+      <a href = {{url_for('showTeams', division_name = division_name)}}>Back to List Of Teams</a>
       </br>
       {{team.name}}</br>
       {{team.nickname}}</br>
