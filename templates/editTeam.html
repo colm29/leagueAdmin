@@ -1,41 +1,47 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <title>Amateur Football Soccer League Dublin Ireland</title>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
-  </head>
-  <body>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href={{url_for('showDivisions')}}>Amateur Football League</a>
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">  </div>
-  <ul class="nav navbar-nav navbar-right">
-       {% if 'user_id' not in session %}
-        <li><a href={{url_for('showLogin')}} class="btn btn-primary">Log In</a></li>
-      {% else %}
-        <li><a href={{url_for('disconnect')}} class="btn btn-primary">Log Out</a></li>
-      {% endif %}
-    </ul>
-</nav>
-    <form class="editUpdate" action={{url_for('editTeam', division_id = team.division_id, team_id = team.id)}} method="post">
-      Name:<input type="text" name="name" placeholder = "{{team.name}}">
-      Nickname:<input type="text" name="nickname" placeholder = "{{team.nickname}}">
-      Annual Membership:<input type="text" name="membership" placeholder = {{team.membership}}>
-      Email:<input type="text" name="email" placeholder = {{team.email}}>
-      Home:<input type="text" name="home" placeholder = {{team.home}}>
-      Description:<input type="text" name="description" placeholder = {{team.description}}>
-      <select name="division" placeholder ="Division">
+{% extends 'divisions.html' %}
+{% block main %}
+<form action={{url_for('editTeam', division_name = division.name, team_name = team.name)}} method="post">
+  <div class="form-row">
+    <div class="form-group col-6">
+      <label for="name">Name</label>
+      <input type="text" class="form-control" name="name" value='{{team.name}}'>
+    </div>
+    <div class="form-group col-6">
+      <label for="nickname">Nickname</label>
+      <input type="text" class="form-control" name="nickname" value='{{team.nickname}}'>
+    </div>
+  </div>
+  <div class='form-row'>
+    <div class="form-group col-6">
+      <label for='home'>Home</label>
+      <input type="text" class="form-control" name="home" value='{{team.home}}'>
+    </div>
+    <div class="form-group col-3">
+      <label for="email">Email</label>
+      <input type="email" class="form-control" name='email' value={{team.email}}>
+    </div>
+    <div class="form-group col-3">
+      <label for="membership">Membership (€)</label>
+      <input type="text" class="form-control" name="membership" value='{{team.membership}}'>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-4">
+      <label for="division">Division</label>
+      <select name="division" class='form-control'>
         {% for d in divisions %}
           <option value={{d.id}} {% if team.division_id == d.id %} selected {% endif %}>{{d.name}}</option>
         {% endfor %}
       </select>
-      <input type="Submit"  value="Change">
-    </form>
-    <a href = {{url_for('showTeams', division_id = team.division_id)}}>Cancel</a>
-  </body>
-</html>
+    </div>
+    <div class="form-group col-8">
+      <label for="description">Description</label>
+      <textarea class="form-control" name='description' rows='4'>{{team.description}}</textarea>
+    </div>
+  </div>
+  <div class ='form-row'>
+    <button type='submit' class='btn btn-primary mb-2'>Change</button>
+    <a class='btn btn-primary' role='button' href = {{url_for('showTeams', division_name = division.name)}}>Cancel</a>
+  </div>
+</form>
+{% endblock %}
