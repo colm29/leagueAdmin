@@ -1,49 +1,15 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <title>Amateur Football Soccer League Dublin Ireland</title>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+{% extends 'divisions.html' %}
+{% block main %}
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
-  </head>
-  <body>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href={{url_for('showDivisions')}}>Amateur Football League</a>
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">  </div>
-  <ul class="nav navbar-nav navbar-right">
-       {% if 'user_id' not in session %}
-        <li><a href={{url_for('showLogin')}} class="btn btn-primary">Log In</a></li>
-      {% else %}
-        <li><a href={{url_for('disconnect')}} class="btn btn-primary">Log Out</a></li>
-      {% endif %}
-    </ul>
-</nav>
-
-    <!--MESSAGE FLASHING EXAMPLE -->
-      {% with messages = get_flashed_messages() %}
-      {% if messages %}
-
-      <ul>
-      {% for message in messages %}
-      <li><strong>{{message}}</strong></li>
-      {% endfor %}
-      </ul>
-      {% endif %}
-      {% endwith %}
-      <a href = {{url_for('showTeams', division_name = division_name)}}>Back to List Of Teams</a>
-      </br>
-      {{team.name}}</br>
-      {{team.nickname}}</br>
-      €{{team.membership}}</br>
-      {{team.email}}</br>
-      {{team.home}}</br>
-      {{team.description}}</br>
-      <a href={{url_for('editTeam',division_name = division_name, team_name = team.name)}}>Edit</a></br>
-      <a href={{url_for('deleteTeam',division_name = division_name, team_name = team.name)}}>Delete</a></br>
-      </br>
-  </body>
-</html>
+  <div class="card-header bg-transparent">{{team.nickname}}</div>
+  <div class="card-body">
+    <h5 class="card-title">{{team.name}}</h5>
+    <p class="card-text">  {{team.description}}<br><br>Annual Membership is €{{team.membership}} per year.  {{team.name}} play their home games at {{team.home}}.</p>
+  </div>
+  <div class="card-footer bg-transparent">Email: {{team.email}}</div>
+  {% block authButtons %}
+  <a href={{url_for('editTeam',division_name = division_name, team_name = team.name)}} class='btn btn-primary' role='button'>Edit</a></br>
+  <a href={{url_for('deleteTeam',division_name = division_name, team_name = team.name)}} class='btn btn-primary' role='button'>Delete</a>
+  {% endblock %}
+  <a class='btn btn-primary' role='button' href = {{url_for('showTeams', division_name = division_name)}}>Back</a>
+{% endblock %}

@@ -81,7 +81,7 @@ def showTeams(division_name):
         division = session.query(Division).filter_by(name = division_name).one()
         teams = session.query(Team).filter_by(division_id = division.id)
         divisions = session.query(Division).order_by(Division.rank).all()
-        if loggedIn(): # can create a new team if logged in, or edit/delete depending on auth
+        if loggedIn(): # can create a new team if logged in
             return render_template('teams.html', teams = teams, division = division, divisions = divisions)
         else:
             return render_template('publicTeams.html', teams = teams, division = division, divisions = divisions)
@@ -93,7 +93,7 @@ def showTeams(division_name):
 def showTeamDetails(division_name, team_name):
     session = newSession()
     team = session.query(Team).filter_by(name = team_name).one()
-    if login_session.get('user_id') == team.user_id:
+    if login_session.get('user_id') == team.user_id: # can edit/delete depending on auth
         return render_template('teamDetails.html', team = team, division_name = division_name)
     else:
         return render_template('publicTeamDetails.html', team = team, division_name = division_name)
@@ -106,15 +106,15 @@ def newTeam(division_name):
         if not loggedIn():
             return "<script>function myFunction() {alert('You are not authorised to create a new team.  Please log in to create a new team.');}</script><body onload='myFunction()''>"
         if request.method == 'POST':
-            team = Team(name = request.form['name'], nickname = request.form['nickname'], membership = request.form['membership'], email = request.form['email'], home = request.form['home'], description = request.form['description'], division_id = division_id, user_id = login_session['user_id'])
+            team = Team(name = request.form['name'], nickname = request.form['nickname'], membership = request.form['membership'], email = request.form['email'], home = request.form['home'], description = request.form['description'], division_id = request.form['division'], user_id = login_session['user_id'])
             session.add(team)
             session.commit()
             flash('New Team Added!')
-            return redirect(url_for('showTeams', division_name = division_name))
+            division = session.query(Division).filter_by(id = request.form['division']).one()
+            return redirect(url_for('showTeams', division_name = division.name))
         else:
-            divisions = session.query(Division).all()
-            division_id = session.query(Division.id).filter_by(name = division_name).one()
-            return render_template('newTeam.html', division_id = division_id, divisions = divisions)
+            divisions = session.query(Division).order_by(Division.rank).all()
+            return render_template('newTeam.html', division_name = division_name, divisions = divisions)
     finally:
         session.close()
 
@@ -122,6 +122,8 @@ def newTeam(division_name):
 @app.route('/division/<string:division_name>/teams/<string:team_name>/edit', methods = ['POST','GET'])
 def editTeam(division_name,team_name):
     try:
+        print division_name
+        print team_name
         session = newSession()
         division = session.query(Division).filter_by(name = division_name).one()
         divisions = session.query(Division).all()
@@ -165,10 +167,9 @@ def deleteTeam(division_name,team_name):
             session.delete(team)
             session.commit
             flash('Team Deleted!')
+            return redirect(url_for('showTeams', division_name = division_name))
         else:
             return render_template('deleteTeam.html', division = division, team = team)
-    except:
-        pass
     finally:
         session.close()
 
@@ -238,14 +239,15 @@ def fbconnect():
 
     #Output HTML returned
     output = ''
+    output +='<div class = "col-10 offset-1">'
+    output +='<div class="card">'
     output += '<h1>Welcome, '
     output += login_session['username']
 
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
-
+    output += ' " style = "width: 200px; height: 200px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"></div></div>'
     flash("Now logged in as %s" % login_session['username'])
     return output
 

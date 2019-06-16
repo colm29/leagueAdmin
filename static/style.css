@@ -1,7 +1,20 @@
 body{
-  background: #eee;
+  background: yellow;
 }
 
-.card{
-    min-height: : 20em;
+.card {
+  margin-top: 4em;
+}
+
+.card-body {
+  padding-top: 2em;
+  padding-bottom: 2em;
+  padding-left: 2em;
+  padding-right: 2em;
+}
+
+
+  padding-top: 4em;
+.alert ul{
+	list-style: none;
 }

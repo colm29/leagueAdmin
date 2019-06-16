@@ -1,25 +1,31 @@
 {% extends 'divisions.html' %}
 
 {% block main %}
-<div class='card'>
+<div class='card-body'>
   <div class='row'>
-    <div class="col-3 offset-2">
+    <div class='col-4 offset-1'>
       <h5 class='card-title'>Divisions</h5>
       <div class='list-group list-group-flush'>
         {% for d in divisions %}
         <a href={{url_for('showTeams', division_name = d.name)}} class="list-group-item list-group-item-action">{{d.name}}</a>
         {% endfor %}
       </div>
-    </div>
-    <div class='col-3'>
-      <h5 class='card-title'>{{division.name}} Teams</h5>
-      <div class='list-group list-group-flush'>
-        {% for t in teams %}
-        <a href={{url_for('showTeamDetails', division_name = division.name, team_name = t.name)}} class="list-group-item list-group-item-action">{{t.name}}</a>
-        {% endfor %}
       </div>
+      <div class='col-4'>
+        <h5 class='card-title'>{{division.name}} Teams</h5>
+        <div class='list-group list-group-flush'>
+          {% for t in teams %}
+          <a href={{url_for('showTeamDetails', division_name = division.name, team_name = t.name)}} class="list-group-item list-group-item-action">{{t.name}}</a>
+          {% endfor %}
+        </div>
+      </div>
+      {% block newButton %}
+        <div class='col'>
+        <a href={{url_for('newTeam', division_name  = division.name)}} class='btn btn-success' role='button'>Create New Team</a>
+        </div>
+      {% endblock %}
     </div>
-      <a href={{url_for('newTeam', division_name  = division.name)}} class='btn btn-success' role='button'>Create New Team</a>
+
   </div>
-</div>
+  </div>
 {% endblock %}

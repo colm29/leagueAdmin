@@ -1,6 +1,7 @@
 {% extends 'divisions.html' %}
 {% block main %}
-<div class='card-header'>Add New Team</div>
+<div class='card-header bg-transparent'>Add New Team</div>
+<div class='card-body'>
 <form action={{url_for('newTeam', division_name = division_name)}} method="post">
   <div class="form-row">
     <div class="form-group col-6">
@@ -45,5 +46,5 @@
     <a class='btn btn-primary' role='button' href = {{url_for('showTeams', division_name = division_name)}}>Cancel</a>
   </div>
 </form>
-
+</div>
 {% endblock %}
