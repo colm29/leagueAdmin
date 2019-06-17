@@ -32,7 +32,7 @@ def newSession():
 def divisionsJSON():
     try:
         session = newSession()
-        divisions = session.query(Division).all()
+        divisions = session.query(Division).order_by(Division.rank).all()
         return jsonify(Divisions = [d.serialize for d in divisions])
     except:
         pass
@@ -126,7 +126,7 @@ def editTeam(division_name,team_name):
         print team_name
         session = newSession()
         division = session.query(Division).filter_by(name = division_name).one()
-        divisions = session.query(Division).all()
+        divisions = session.query(Division).order_by(Division.rank).all()
         team = session.query(Team).filter_by(name = team_name).one()
         if team.user_id != login_session['user_id']: # in case of access by URL
             return "<script>function myFunction() {alert('You are not authorised to edit this team.  Please create your own team in order to edit.');}</script><body onload='myFunction()''>"
