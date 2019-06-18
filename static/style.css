@@ -1,5 +1,5 @@
-body{
-  background: yellow;
+.container-fluid{
+  background-image: url({{ url_for('static', filename='sandro-schuh-80814-unsplash.jpg') }});
 }
 
 .card {
@@ -13,8 +13,6 @@ body{
   padding-right: 2em;
 }
 
-
-  padding-top: 4em;
 .alert ul{
 	list-style: none;
 }

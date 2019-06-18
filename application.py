@@ -19,7 +19,7 @@ FB_ID = json.loads(
 FB_SECRET= json.loads(
         open('fbclientsecrets.json', 'r').read())['web']['app_secret']
 
-engine = create_engine('sqlite:///league.db')
+engine = create_engine('sqlite:///AFLeague.db')
 Base.metadata.bind = engine
 
 def newSession():
@@ -39,7 +39,7 @@ def divisionsJSON():
     finally:
         session.close()
 
-@app.route('/divisions/<string:division_name>/teams/JSON')
+@app.route('/divisions/<path:division_name>/teams/JSON')
 def teamsJSON(division_name):
     try:
         session = newSession()
@@ -49,7 +49,7 @@ def teamsJSON(division_name):
     finally:
         session.close()
 
-@app.route('/divisions/<string:division_name>/teams/<string:team_name>/JSON')
+@app.route('/divisions/<path:division_name>/teams/<path:team_name>/JSON')
 def teamJSON(division_name, team_name):
     try:
         session = newSession()
@@ -73,8 +73,8 @@ def showDivisions():
         session.close() # closes new session to avoid error about objects created in a thread can only be used in that same thread
 
 #Function to show all teams (items) in a Division
-@app.route('/division/<string:division_name>')
-@app.route('/division/<string:division_name>/teams')
+@app.route('/division/<path:division_name>')
+@app.route('/division/<path:division_name>/teams')
 def showTeams(division_name):
     try:
         session = newSession()
@@ -89,7 +89,7 @@ def showTeams(division_name):
         session.close()
 
 #Function to show selected team details
-@app.route('/division/<string:division_name>/teams/<path:team_name>/teamDetails')
+@app.route('/division/<path:division_name>/teams/<path:team_name>/teamDetails')
 def showTeamDetails(division_name, team_name):
     session = newSession()
     team = session.query(Team).filter_by(name = team_name).one()
@@ -99,7 +99,7 @@ def showTeamDetails(division_name, team_name):
         return render_template('publicTeamDetails.html', team = team, division_name = division_name)
 
 #Function to add new team - any logged in user can do this
-@app.route('/division/<string:division_name>/teams/new', methods = ['GET', 'POST'])
+@app.route('/division/<path:division_name>/teams/new', methods = ['GET', 'POST'])
 def newTeam(division_name):
     try:
         session = newSession()
@@ -119,11 +119,9 @@ def newTeam(division_name):
         session.close()
 
 #Function to edit team - only available to user who created team
-@app.route('/division/<string:division_name>/teams/<string:team_name>/edit', methods = ['POST','GET'])
+@app.route('/division/<path:division_name>/teams/<path:team_name>/edit', methods = ['POST','GET'])
 def editTeam(division_name,team_name):
     try:
-        print division_name
-        print team_name
         session = newSession()
         division = session.query(Division).filter_by(name = division_name).one()
         divisions = session.query(Division).order_by(Division.rank).all()
@@ -140,9 +138,9 @@ def editTeam(division_name,team_name):
             if request.form['email']:
                 team.email = request.form['email']
             if request.form['home']:
-                team.email = request.form['home']
+                team.home = request.form['home']
             if request.form['description']:
-                team.email = request.form['description']
+                team.description = request.form['description']
             if request.form['division']:
                 team.division_id = request.form['division']
             session.add(team)
@@ -155,7 +153,7 @@ def editTeam(division_name,team_name):
         session.close()
 
 #Function to delete team - only available to user who created team
-@app.route('/division/<string:division_name>/teams/<string:team_name>/delete', methods = ['POST','GET'])
+@app.route('/division/<path:division_name>/teams/<path:team_name>/delete', methods = ['POST','GET'])
 def deleteTeam(division_name,team_name):
     try:
         session = newSession()
@@ -165,7 +163,7 @@ def deleteTeam(division_name,team_name):
             return "<script>function myFunction() {alert('You are not authorised to delete this team.  Please create your own team in order to delete.');}</script><body onload='myFunction()''>"
         if request.method == 'POST':
             session.delete(team)
-            session.commit
+            session.commit()
             flash('Team Deleted!')
             return redirect(url_for('showTeams', division_name = division_name))
         else:

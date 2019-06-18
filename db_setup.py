@@ -66,6 +66,6 @@ class Team(Base):
 
 #########insert at end of file ##########
 
-engine = create_engine('sqlite:///league.db')
+engine = create_engine('sqlite:///AFLeague.db')
 
 Base.metadata.create_all(engine)

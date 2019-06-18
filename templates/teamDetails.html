@@ -7,9 +7,14 @@
     <p class="card-text">  {{team.description}}<br><br>Annual Membership is €{{team.membership}} per year.  {{team.name}} play their home games at {{team.home}}.</p>
   </div>
   <div class="card-footer bg-transparent">Email: {{team.email}}</div>
+  <div class='row'>
   {% block authButtons %}
-  <a href={{url_for('editTeam',division_name = division_name, team_name = team.name)}} class='btn btn-primary' role='button'>Edit</a></br>
-  <a href={{url_for('deleteTeam',division_name = division_name, team_name = team.name)}} class='btn btn-primary' role='button'>Delete</a>
-  {% endblock %}
-  <a class='btn btn-primary' role='button' href = {{url_for('showTeams', division_name = division_name)}}>Back</a>
+          <a href={{url_for('editTeam',division_name = division_name, team_name = team.name)}} class='btn btn-primary' role='button'>Edit</a></br>
+          <a href={{url_for('deleteTeam',division_name = division_name, team_name = team.name)}} class='btn btn-primary' role='button'>Delete</a>
+        {% endblock %}
+      <div class='col-2'>
+          <a class='btn btn-primary' role='button' href = {{url_for('showTeams', division_name = division_name)}}>Back</a>
+      </div>
+    </div>
+  </div>
 {% endblock %}
