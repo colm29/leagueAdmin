@@ -1,8 +1,10 @@
 {% extends 'divisions.html' %}
 {% block main %}
-    <h5 class='card-title'>Are you sure you want to delete team {{team.name}}?</h5>
-    <form action={{url_for('deleteTeam',division_name = division.name, team_name = team.name)}} method="post">
-      <button type='submit' class='btn btn-primary'>Delete</button>
-      <a href = {{url_for('showTeams', division_name = division.name)}} class = 'btn btn-primary' role= 'button'>Cancel</a>
-    </form>
+<h5 class='card-title pl-2 pt-2'>Are you sure you want to delete team {{team.name}}?</h5>
+<div class='edit-buttons'>
+  <form action={{url_for('deleteTeam',division_name = division.name, team_name = team.name)}} method="post">
+    <button type='submit' class='btn btn-danger'>Delete</button>
+    <a href={{url_for('showTeams', division_name = division.name)}} class='btn btn-primary' role='button'>Cancel</a>
+</div>
+</form>
 {% endblock %}

@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  <link rel='stylesheet' type = 'text/css' href="{{url_for('static', filename='style.css')}}">
+  <link rel='stylesheet' type='text/css' href="{{url_for('static', filename='style.css')}}">
   {% endblock %}
 </head>
 
@@ -43,30 +43,28 @@
   {% endif %}
   {% endwith %}
   {% endblock %}
-  <div class='container-fluid'>
-  <div class = 'col-10 offset-1'>
+  <div class='col-10 offset-1'>
     <div class='card'>
-  {% block main %}
-        <div class='card-body'>
-          <div class="row">
-            <div class="col-4 offset-1">
-              <h5 class='card-title'>Divisions</h5>
-              <div class="list-group list-group-flush">
-                {% for d in divisions %}
-                <a href={{url_for('showTeams', division_name = d.name)}} class="list-group-item list-group-item-action">{{d.name}}</a>
-                {% endfor %}
-              </div>
-            </div>
-            <div class="col-4">
-              <h5 class='card-title'>Teams</h5>
+      {% block main %}
+      <div class='card-body'>
+        <div class="row">
+          <div class="col-4 offset-1">
+            <h5 class='card-title'>Divisions</h5>
+            <div class="list-group list-group-flush">
+              {% for d in divisions %}
+              <a href={{url_for('showTeams', division_name = d.name)}} class="list-group-item list-group-item-action">{{d.name}}</a>
+              {% endfor %}
             </div>
           </div>
+          <div class="col-4">
+            <h5 class='card-title'>Teams</h5>
+          </div>
         </div>
+      </div>
 
-  {% endblock %}
-</div>
-</div>
-</div>
+      {% endblock %}
+    </div>
+  </div>
   <!-- Optional JavaScript -->
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
