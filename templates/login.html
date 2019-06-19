@@ -6,8 +6,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  <link rel='stylesheet' type = 'text/css' href='{{ url_for('static', filename='style.css') }}'>
-  <script  src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+  <link rel='stylesheet' type='text/css' href='{{ url_for('static', filename='style.css') }}'>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 </head>
 
 <div id="fb-root"></div>
@@ -54,10 +54,11 @@ function sendTokenToServer() {
       // Handle or verify the server response if necessary.
       if (result) {
         $('.fb-login-button').attr('style', 'display: none');
-        $('#result').html('Login Successful!</br>'+ result + '</br>Redirecting...')
+        $('.card').attr('style', 'display: none');
+        $('#result').html('<div class = "col-10 offset-1"><div class="card px-4 py-4"><h5 class= "text-success">Login Successful!</h5></br>'+ result + '</br><h6 class="text-muted">Redirecting...</h6></div></div>')
        setTimeout(function() {
         window.location.href = "/";
-      }, 15000);
+      }, 4000);
     } else {
       $('#result').html('Failed to make a server-side call. Check your configuration and console.');
        }
@@ -68,17 +69,13 @@ function sendTokenToServer() {
 </script>
 <!--<fb:login-button scope="public_profile,email" onlogin="sendTokenToServer();">
 </fb:login-button>-->
-<div class = 'col-10 offset-1'>
-<div class='card'>
-  <div class = 'col-2 offset-5'>
-    {% block display %}
-    <h5 class = 'card-title' align='center'>Log In</h3><br>
-<div class="fb-login-button" data-width="100" data-size="large" data-button-type="continue_with"  data-use-continue-as="true" data-scope="public_profile,email" data-onlogin="sendTokenToServer();" align='center'></div>
-<br><br>
-<a href = {{url_for('showDivisions')}} class = 'btn btn-primary btn-block' role= 'button' align = 'center'>Cancel</a>
-  {% endblock %}
-</div>
-</div>
+<div class='col-10 offset-1'>
+  <div class='card'>
+    <h5 class='card-title pt-3' align='center'>Log In</h5><br><br>
+    <div class="fb-login-button" align='center' data-width="" data-size="large" data-button-type="continue_with" data-use-continue-as="true" data-scope="public_profile,email" data-onlogin="sendTokenToServer();" align='center'></div>
+    <a href={{url_for('showDivisions')}} class='btn btn-primary my-4 mx-auto' role='button' align='center'>Cancel</a>
+  </div>
 </div>
 </body>
+
 </html>
