@@ -1,53 +1,53 @@
 {% extends 'divisions.html' %}
 {% block main %}
 
-<div class='card-header bg-transparent'><strong>Change Team Details</strong></div>
-<div class='card-body pb-2'>
+<div class="card-header bg-transparent"><strong>Change Team Details</strong></div>
+<div class="card-body pb-2">
   <form action={{url_for('editTeam', division_name = division.name, team_name = team.name)}} method="post">
     <div class="form-row">
       <div class="form-group col-6">
-        <label class='lead' for="name">Name</label>
-        <input type="text" class="form-control" name="name" value='{{team.name}}'>
+        <label class="lead" for="name">Name</label>
+        <input type="text" class="form-control" name="name" value="{{team.name}}">
       </div>
       <div class="form-group col-6">
-        <label class='lead' for="nickname">Nickname</label>
-        <input type="text" class="form-control" name="nickname" value='{{team.nickname}}'>
+        <label class="lead" for="nickname">Nickname</label>
+        <input type="text" class="form-control" name="nickname" value="{{team.nickname}}">
       </div>
     </div>
-    <div class='form-row'>
+    <div class="form-row">
       <div class="form-group col-6">
-        <label class='lead' for='home'>Home</label>
-        <input type="text" class="form-control" name="home" value='{{team.home}}'>
+        <label class="lead" for="home">Home</label>
+        <input type="text" class="form-control" name="home" value="{{team.home}}">
       </div>
       <div class="form-group col-3">
-        <label class='lead' for="email">Email</label>
-        <input type="email" class="form-control" name='email' value={{team.email}}>
+        <label class="lead" for="email">Email</label>
+        <input type="email" class="form-control" name="email" value={{team.email}}>
       </div>
       <div class="form-group col-3">
-        <label class='lead' for="membership">Membership (€)</label>
-        <input type="text" class="form-control" name="membership" value='{{team.membership}}'>
+        <label class="lead" for="membership">Membership (€)</label>
+        <input type="text" class="form-control" name="membership" value="{{team.membership}}">
       </div>
     </div>
     <div class="form-row">
       <div class="form-group col-4">
-        <label class='lead' for="division">Division</label>
-        <select name="division" class='form-control'>
+        <label class="lead" for="division">Division</label>
+        <select name="division" class="form-control">
           {% for d in divisions %}
           <option value={{d.id}} {% if team.division_id == d.id %} selected {% endif %}>{{d.name}}</option>
           {% endfor %}
         </select>
       </div>
       <div class="form-group col-8">
-        <label class='lead' for="description">Description</label>
-        <textarea class="form-control" name='description' rows='4'>{{team.description}}</textarea>
+        <label class="lead" for="description">Description</label>
+        <textarea class="form-control" name="description" rows="4">{{team.description}}</textarea>
       </div>
     </div>
-    <div class='form-row'>
+    <div class="form-row">
       <div class="form-group col-1">
-        <button type='submit' class='btn btn-primary'>Change</button>
+        <button type="submit" class="btn btn-primary">Change</button>
       </div>
       <div class="form-group col-1">
-        <a class='btn btn-primary' role='button' href={{url_for('showTeams', division_name = division.name)}}>Cancel</a>
+        <a class="btn btn-primary" role="button" href={{url_for('showTeams', division_name = division.name)}}>Cancel</a>
       </div>
     </div>
   </form>
