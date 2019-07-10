@@ -20,7 +20,7 @@ FB_ID = json.loads(
 FB_SECRET = json.loads(
         open('fbclientsecrets.json', 'r').read())['web']['app_secret']
 
-engine = create_engine('sqlite:///league.db')
+engine = create_engine('sqlite:////var/www/league.db')
 Base.metadata.bind = engine
 
 
