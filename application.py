@@ -13,14 +13,15 @@ import random
 import string
 
 app = Flask(__name__)
+app.secret_key = 'pruef4559d002'
 
 FB_ID = json.loads(
-    open('fbclientsecrets.json', 'r').read())['web']['app_id']
+    open('/var/www/catalog/fbclientsecrets.json', 'r').read())['web']['app_id']
 
 FB_SECRET = json.loads(
-        open('fbclientsecrets.json', 'r').read())['web']['app_secret']
+        open('/var/www/catalog/fbclientsecrets.json', 'r').read())['web']['app_secret']
 
-engine = create_engine('sqlite:////var/www/league.db')
+engine = create_engine('postgresql://www-data:wwwdata2019@localhost/league')
 Base.metadata.bind = engine
 
 
@@ -386,6 +387,5 @@ def createUser(login_session):
 
 
 if __name__ == '__main__':
-    app.secret_key = 'super_secret_key'
     app.debug = True
     app.run(host='0.0.0.0', port=8000)
