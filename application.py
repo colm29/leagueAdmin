@@ -11,9 +11,10 @@ import requests
 import json
 import random
 import string
+import os
 
 app = Flask(__name__)
-app.secret_key = 'pruef4559d002'
+app.secret_key = os.urandom(16)
 
 FB_ID = json.loads(
     open('/var/www/catalog/fbclientsecrets.json', 'r').read())['web']['app_id']
