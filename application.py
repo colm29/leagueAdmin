@@ -22,6 +22,7 @@ FB_ID = json.loads(
 FB_SECRET = json.loads(
         open('/var/www/catalog/fbclientsecrets.json', 'r').read())['web']['app_secret']
 
+
 engine = create_engine('postgresql://www-data:wwwdata2019@localhost/league')
 Base.metadata.bind = engine
 
