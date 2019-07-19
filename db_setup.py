@@ -1,3 +1,4 @@
+#usr/bin/python3
 import sys
 
 from sqlalchemy import Column, ForeignKey, Integer, String
@@ -40,11 +41,9 @@ class Team(Base):
 
     id = Column(Integer, primary_key = True)
     name = Column(String(80), nullable = False)
-    nickname = Column(String(80))
-    membership = Column(Integer, nullable = False)
     email = Column(String(80))
-    home = Column(String(100))
-    description = Column(String(500))
+    home_id = Column(Integer, ForeignKey('home.id'))
+    home = relationship(Home)
     division_id = Column(Integer, ForeignKey('division.id'))
     division = relationship(Division)
     user_id = Column(Integer, ForeignKey('user.id'))
@@ -56,16 +55,30 @@ class Team(Base):
         return{
             'id': self.id,
             'name': self.name,
-            'nickname': self.nickname,
-            'membership': self.membership,
             'email': self.email,
             'home': self.home,
             'description': self.description
         }
 
+class Home(Base):
+    __tablename__ = 'home'
+
+    id = Column(Integer, primary_key = True)
+    name = Column(String(100), nullable = False)
+    address = Column(String(300))
+    lat = Column(Float)
+    lon = Column(Float)
+
+class Referee(Base):
+    __tablename__ = 'referee'
+
+    id = Column(Integer, primary_key = True)
+    name = Column(String(100), nullable = False)
+    phone = Column(String(300))
+
 
 #########insert at end of file ##########
 
-engine = create_engine('postgresql://www-data:wwwdata2019@localhost/league')
+engine = create_engine('postgresql://colm:colm@localhost/league')
 
 Base.metadata.create_all(engine)
