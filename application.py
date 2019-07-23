@@ -1,11 +1,10 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
-import pdb
+#usr/bin/python3
+# # -*- coding: utf-8 -*-
 from flask import Flask, render_template, url_for, flash, jsonify, \
     request, redirect,  make_response, session as login_session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from db_setup import Base, Division, Team, User
+from db_setup import Base, Comp, Team, User
 import httplib2
 import requests
 import json
@@ -17,13 +16,13 @@ app = Flask(__name__)
 app.secret_key = os.urandom(16)
 
 FB_ID = json.loads(
-    open('/var/www/catalog/fbclientsecrets.json', 'r').read())['web']['app_id']
+    open('fbclientsecrets.json', 'r').read())['web']['app_id']
 
 FB_SECRET = json.loads(
-        open('/var/www/catalog/fbclientsecrets.json', 'r').read())['web']['app_secret']
+        open('fbclientsecrets.json', 'r').read())['web']['app_secret']
 
 
-engine = create_engine('postgresql://www-data:wwwdata2019@localhost/league')
+engine = create_engine('postgresql://colm:colm@localhost/league')
 Base.metadata.bind = engine
 
 
@@ -33,49 +32,13 @@ def newSession():
     return session
 
 
-# API Endpoints
-@app.route('/divisions/JSON')
-def divisionsJSON():
-    try:
-        session = newSession()
-        divisions = session.query(Division).order_by(Division.rank).all()
-        return jsonify(Divisions=[d.serialize for d in divisions])
-    finally:
-        session.close()
-
-
-@app.route('/divisions/<path:division_name>/teams/JSON')
-def teamsJSON(division_name):
-    try:
-        session = newSession()
-        division = session.query(Division).filter_by(name=division_name)\
-            .one()
-        teams = session.query(Team).filter_by(division_id=division.id)
-        return jsonify(Teams=[t.serialize for t in teams])
-    finally:
-        session.close()
-
-
-@app.route('/divisions/<path:division_name>/teams/<path:team_name>/JSON')
-def teamJSON(division_name, team_name):
-    try:
-        session = newSession()
-        division = session.query(Division).filter_by(name=division_name).one()
-        team = session.query(Team).filter_by(name=team_name).one()
-        return jsonify(Teams=[team.serialize])
-    finally:
-        session.close()
-
-# End of JSON API Section
-
-
 # Route for initial page - show all categories(Divisions in Football League)
 @app.route('/')
 @app.route('/divisions')
 def showDivisions():
     try:
         session = newSession()  # creates a new session
-        divisions = session.query(Division).order_by(Division.rank).all()
+        divisions = session.query(Comp).order_by(Comp.rank).all()
         return render_template('divisions.html', divisions=divisions)
     finally:
         session.close()  # closes new session to avoid error about objects
@@ -88,9 +51,9 @@ def showDivisions():
 def showTeams(division_name):
     try:
         session = newSession()
-        division = session.query(Division).filter_by(name=division_name).one()
+        division = session.query(Comp).filter_by(name=division_name).one()
         teams = session.query(Team).filter_by(division_id=division.id)
-        divisions = session.query(Division).order_by(Division.rank).all()
+        divisions = session.query(Comp).order_by(Comp.rank).all()
         if loggedIn():  # can create a new team if logged in
             return render_template('teams.html', teams=teams,
                                    division=division, divisions=divisions)
@@ -136,11 +99,11 @@ def newTeam(division_name):
             session.add(team)
             session.commit()
             flash('New Team Added!')
-            division = session.query(Division) \
+            division = session.query(Comp) \
                 .filter_by(id=request.form['division']).one()
             return redirect(url_for('showTeams', division_name=division.name))
         else:
-            divisions = session.query(Division).order_by(Division.rank).all()
+            divisions = session.query(Comp).order_by(Comp.rank).all()
             return render_template('newTeam.html',
                                    division_name=division_name,
                                    divisions=divisions)
@@ -154,8 +117,8 @@ def newTeam(division_name):
 def editTeam(division_name, team_name):
     try:
         session = newSession()
-        division = session.query(Division).filter_by(name=division_name).one()
-        divisions = session.query(Division).order_by(Division.rank).all()
+        division = session.query(Comp).filter_by(name=division_name).one()
+        divisions = session.query(Comp).order_by(Comp.rank).all()
         team = session.query(Team).filter_by(name=team_name).one()
         if team.user_id != login_session['user_id']:
             # in case of access by URL
@@ -194,7 +157,7 @@ def editTeam(division_name, team_name):
 def deleteTeam(division_name, team_name):
     try:
         session = newSession()
-        division = session.query(Division).filter_by(name=division_name).one()
+        division = session.query(Comp).filter_by(name=division_name).one()
         team = session.query(Team).filter_by(name=team_name).one()
         if team.user_id != login_session['user_id']:
             # in case of access by URL
@@ -220,7 +183,7 @@ def deleteTeam(division_name, team_name):
 @app.route('/login')
 def showLogin():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
-                    for x in xrange(32))
+                    for x in range(32))
     login_session['state'] = state
     return render_template('login.html', STATE=state, fbclient_id=FB_ID)
 
@@ -237,7 +200,7 @@ def fbconnect():
         return response
 
     access_token = request.data
-    print "access token received %s " % access_token
+    print("access token received %s ") % access_token
 
     url = 'https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=%s&client_secret=%s&fb_exchange_token=%s' % (FB_ID, FB_SECRET, access_token)
     h = httplib2.Http()
