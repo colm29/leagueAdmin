@@ -46,15 +46,6 @@ class Comp(Base):
     cup = Column(Boolean, nullable = False)
     day_id = Column(Integer, ForeignKey('day.id'))
     day = relationship(Day)
-
-    @property
-    def serialize(self):
-        #Returns object data in easily serializable format
-        return{
-            'id': self.id,
-            'name': self.name,
-            'rank': self.rank
-        }
     
 class Home(Base):
     __tablename__ = 'home'
@@ -78,17 +69,6 @@ class Team(Base):
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
 
-    @property
-    def serialize(self):
-        #Returns object data in easily serializable format
-        return{
-            'id': self.id,
-            'name': self.name,
-            'email': self.email,
-            'home': self.home,
-            'description': self.description
-        }
-
 
 class Referee(Base):
     __tablename__ = 'referee'
@@ -103,10 +83,10 @@ class NewsItem(Base):
     message = Column(String(500), nullable = False)
     createdOn = Column(DateTime(timezone = True), server_default = func.now(), nullable = False)
     createdBy = Column(Integer, ForeignKey('user.id'), nullable = False)
-    user1 = relationship(User)
+    user1 = relationship(User, foreign_keys='NewsItem.createdBy')
     updatedOn = Column(DateTime)
     updatedBy = Column(Integer, ForeignKey('user.id'))
-    user2 = relationship(User)
+    user2 = relationship(User,  foreign_keys='NewsItem.updatedBy')
 
 class Match(Base):
     __tablename__ = 'match'
@@ -114,9 +94,9 @@ class Match(Base):
     comp_id = Column(Integer, ForeignKey('comp.id'), nullable = False)
     comp = relationship(Comp)
     homeTeam = Column(Integer, ForeignKey('team.id'), nullable = False)
-    team1 = relationship(Team)
+    team1 = relationship(Team, foreign_keys='Match.homeTeam')
     awayTeam = Column(Integer, ForeignKey('team.id'), nullable = False)
-    team2 = relationship(Team)
+    team2 = relationship(Team ,foreign_keys='Match.awayTeam')
     homeScore = Column(Integer)
     awayScore = Column(Integer)
     home_id = Column(Integer, ForeignKey('home.id'), nullable = False)
@@ -125,10 +105,10 @@ class Match(Base):
     referee = relationship(Referee)
     createdOn = Column(DateTime(timezone=True), server_default=func.now(), nullable = False)
     createdBy = Column(Integer, ForeignKey('user.id'), nullable = False)
-    user1 = relationship(User)
+    user1 = relationship(User, foreign_keys='Match.createdBy')
     updatedOn = Column(DateTime)
     updatedBy = Column(Integer, ForeignKey('user.id'))
-    user2 = relationship(User)
+    user2 = relationship(User, foreign_keys='Match.updatedBy')
 
 #########insert at end of file ##########
 
