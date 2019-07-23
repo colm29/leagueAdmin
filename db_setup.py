@@ -46,7 +46,7 @@ class Comp(Base):
     cup = Column(Boolean, nullable = False)
     day_id = Column(Integer, ForeignKey('day.id'))
     day = relationship(Day)
-    
+
 class Home(Base):
     __tablename__ = 'home'
 
