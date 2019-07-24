@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 
 from db_setup import Division, Base, Team, User
 
-engine = create_engine('postgresql://www-data:wwwdata2019@localhost/league')
+engine = create_engine('postgresql://colm:colm@localhost/league')
 # Bind the engine to the metadata of the Base class so that the
 # declaratives can be accessed through a DBSession instance
 Base.metadata.bind = engine
@@ -37,41 +37,48 @@ session.commit()
 
 
 # teams for Premier League North
-division1 = Division(name="Premier Division North", rank = 1)
+division1 = Comp(name="Premier Division North", rank = 1)
 
 session.add(division1)
 session.commit()
 
-division2 = Division(name="Division 1 North", rank = 2)
+division2 = Comp(name="Division 1 North", rank = 2)
 
 session.add(division1)
 session.commit()
 
-division3 = Division(name="Division 2 North", rank = 3)
+division3 = Comp(name="Division 2 North", rank = 3)
 
 session.add(division1)
 session.commit()
 
-division4 = Division(name="Division 3 North", rank = 4)
+division4 = Comp(name="Division 3 North", rank = 4)
 
 session.add(division1)
 session.commit()
 
-team1 = Team(name="Celtic Park FC", nickname="The Park",
-                     membership=200.00, email = 'colm29@gmail.com', division=division3, user = user1, home = 'Beaumont Convent, Dublin 9', description = 'Founded in 1953, Celtic Park Football club have a rich history in the nothside Dublin suburb of Beaumont.  They also boast the eldest player in the league, Aidan Lynch - still plying his trade at the tender young age of 69 this year.  Most of his appearances these days are off the bench, but he still pops up with an important goal from time to time.')
+home1 = Home(name = 'Beaumont Convent', address = 'Dublin 9')
+session.add(home1)
+home2 = Home(name = 'Fr. Collins Park', address = 'Donaghmede')
+session.add(home2)
+home3 = Home(name = 'Athletic Park', address = 'Swords')
+session.add(home3)
+session.commit()
+
+
+team1 = Team(name="Celtic Park FC", email = 'colm29@gmail.com', home_id = home1, comp_id = division3, user = user1)
 
 session.add(team1)
 session.commit()
 
 
-team1 = Team(name="Trinity Donaghmede B", nickname="The Layabouts",
-                     membership=110, email = 'trindon@anymail.com', division=division3, user = user2, home = 'Fr. Collins Park, Donaghmede', description = 'Originally founded by escaped convicts in 1964,  many of the current crop of players are direct descendents from its founding fathers, and have the disciplinary records to prove it.  Play in black and red vertical stripes.  The B team are the poorer version of the A team who play in the Premier Division.')
+team1 = Team(name="Trinity Donaghmede B", email = 'trindon@anymail.com', home = home2, division=division3, user = user2)
 
 session.add(team1)
 session.commit()
 
 team1 = Team(name="Swords Celtic 35s", nickname="The Mad Dogs",
-                     membership=210.00, email = 'sc@swordsvillage.ie', division=division3, user = user2, home = 'Athletic Park, Swords', description = 'Playing in green and black vertical stripes, this North county Dublin team\'s form is as predictable as the March weather, veering from the sublime to the ridiculous from minute one to ninety.')
+                     membership=210.00, email = 'sc@swordsvillage.ie', division=division3, user = user2, home = '', description = 'Playing in green and black vertical stripes, this North county Dublin team\'s form is as predictable as the March weather, veering from the sublime to the ridiculous from minute one to ninety.')
 
 session.add(team1)
 session.commit()
