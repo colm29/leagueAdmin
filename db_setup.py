@@ -8,6 +8,15 @@ from sqlalchemy import create_engine
 
 Base = declarative_base()
 
+class AppUser(Base):
+    __tablename__ = 'appuser'
+
+    id = Column(Integer, primary_key = True)
+    name = Column(String(100), nullable = False)
+    email = Column(String(80), nullable = False)
+    picture = Column(String(80))
+
+
 class Season(Base):
     __tablename__ = 'season'
 
@@ -16,13 +25,7 @@ class Season(Base):
     start = Column(DateTime)
     end = Column(DateTime)
 
-class User(Base):
-    __tablename__ = 'user'
 
-    id = Column(Integer, primary_key = True)
-    name = Column(String(100), nullable = False)
-    email = Column(String(80), nullable = False)
-    picture = Column(String(80))
 
 class Section(Base):
     __tablename__ = 'section'
@@ -43,7 +46,7 @@ class Comp(Base):
     rank = Column(Integer, nullable = False)
     section_id = Column(Integer, ForeignKey('section.id'))
     section = relationship(Section)
-    cup = Column(Boolean, nullable = False)
+    cup = Column(Boolean, default = 0, nullable = False)
     day_id = Column(Integer, ForeignKey('day.id'))
     day = relationship(Day)
 
@@ -66,8 +69,8 @@ class Team(Base):
     home = relationship(Home)
     comp_id = Column(Integer, ForeignKey('comp.id'))
     comp = relationship(Comp)
-    user_id = Column(Integer, ForeignKey('user.id'))
-    user = relationship(User)
+    user_id = Column(Integer, ForeignKey('appuser.id'))
+    appuser = relationship(AppUser)
 
 
 class Referee(Base):
@@ -78,15 +81,15 @@ class Referee(Base):
     phone = Column(String(15), nullable = False)
 
 class NewsItem(Base):
-    __tablename__ = 'newsItem'
+    __tablename__ = 'newsitem'
     id = Column(Integer, primary_key = True)
     message = Column(String(500), nullable = False)
     createdOn = Column(DateTime(timezone = True), server_default = func.now(), nullable = False)
-    createdBy = Column(Integer, ForeignKey('user.id'), nullable = False)
-    user1 = relationship(User, foreign_keys='NewsItem.createdBy')
+    createdBy = Column(Integer, ForeignKey('appuser.id'), nullable = False)
+    user1 = relationship(AppUser, foreign_keys='NewsItem.createdBy')
     updatedOn = Column(DateTime)
-    updatedBy = Column(Integer, ForeignKey('user.id'))
-    user2 = relationship(User,  foreign_keys='NewsItem.updatedBy')
+    updatedBy = Column(Integer, ForeignKey('appuser.id'))
+    user2 = relationship(AppUser,  foreign_keys='NewsItem.updatedBy')
 
 class Match(Base):
     __tablename__ = 'match'
@@ -104,11 +107,11 @@ class Match(Base):
     referee_id = Column(Integer, ForeignKey('referee.id'), nullable = False)
     referee = relationship(Referee)
     createdOn = Column(DateTime(timezone=True), server_default=func.now(), nullable = False)
-    createdBy = Column(Integer, ForeignKey('user.id'), nullable = False)
-    user1 = relationship(User, foreign_keys='Match.createdBy')
+    createdBy = Column(Integer, ForeignKey('appuser.id'), nullable = False)
+    user1 = relationship(AppUser, foreign_keys='Match.createdBy')
     updatedOn = Column(DateTime)
-    updatedBy = Column(Integer, ForeignKey('user.id'))
-    user2 = relationship(User, foreign_keys='Match.updatedBy')
+    updatedBy = Column(Integer, ForeignKey('appuser.id'))
+    user2 = relationship(AppUser, foreign_keys='Match.updatedBy')
 
 #########insert at end of file ##########
 
