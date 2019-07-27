@@ -1,19 +1,17 @@
-{% extends 'divisions.html' %}
+{% extends 'comps.html' %}
 {% block main %}
 
-<div class="card-header bg-transparent">{{team.nickname}}</div>
 <div class="card-body">
   <h5 class="card-title">{{team.name}}</h5>
-  <p class="card-text"> {{team.description}}<br><br>Annual Membership is €{{team.membership}} per year. {{team.name}} play their home games at {{team.home}}.</p>
 </div>
 <div class="card-footer bg-transparent">Email: {{team.email}}</div>
 <div class="row">
   <div class="edit-buttons">
     {% block authButtons %}
-    <a href={{url_for("editTeam",division_name = division_name, team_name = team.name)}} class="btn btn-primary mx-1" role="button">Edit</a>
-    <a href={{url_for("deleteTeam",division_name = division_name, team_name = team.name)}} class="btn btn-primary mx-1" role="button">Delete</a>
+    <a href={{url_for("editTeam",comp_name = comp_name, team_name = team.name)}} class="btn btn-primary mx-1" role="button">Edit</a>
+    <a href={{url_for("deleteTeam",comp_name = comp_name, team_name = team.name)}} class="btn btn-primary mx-1" role="button">Delete</a>
     {% endblock %}
-    <a class="btn btn-primary mx-1" role="button" href={{url_for('showTeams', division_name = division_name)}}>Back</a>
+    <a class="btn btn-primary mx-1" role="button" href={{url_for('showTeams', comp_name = comp_name)}}>Back</a>
   </div>
 </div>
 </div>

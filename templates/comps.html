@@ -51,8 +51,8 @@
           <div class="col-4 offset-1">
             <h5 class="card-title">Divisions</h5>
             <div class="list-group list-group-flush">
-              {% for d in divisions %}
-              <a href={{url_for('showTeams', division_name = d.name)}} class="list-group-item list-group-item-action">{{d.name}}</a>
+              {% for d in comps %}
+              <a href={{url_for('showTeams', comp_name = d.name)}} class="list-group-item list-group-item-action">{{d.name}}</a>
               {% endfor %}
             </div>
           </div>

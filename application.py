@@ -4,7 +4,7 @@ from flask import Flask, render_template, url_for, flash, jsonify, \
     request, redirect,  make_response, session as login_session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from db_setup import Base, Comp, Team, User
+from db_setup import Base, Comp, Team,AppUser
 import httplib2
 import requests
 import json
@@ -34,53 +34,53 @@ def newSession():
 
 # Route for initial page - show all categories(Divisions in Football League)
 @app.route('/')
-@app.route('/divisions')
+@app.route('/comps')
 def showDivisions():
     try:
         session = newSession()  # creates a new session
-        divisions = session.query(Comp).order_by(Comp.rank).all()
-        return render_template('divisions.html', divisions=divisions)
+        comps = session.query(Comp).order_by(Comp.rank).all()
+        return render_template('comps.html', comps=comps)
     finally:
         session.close()  # closes new session to avoid error about objects
         # created in a thread can only be used in that same thread
 
 
-# Function to show all teams (items) in a Division
-@app.route('/division/<path:division_name>')
-@app.route('/division/<path:division_name>/teams')
-def showTeams(division_name):
+# Function to show all teams (items) in a Comp
+@app.route('/comp/<path:comp_name>')
+@app.route('/comp/<path:comp_name>/teams')
+def showTeams(comp_name):
     try:
         session = newSession()
-        division = session.query(Comp).filter_by(name=division_name).one()
-        teams = session.query(Team).filter_by(division_id=division.id)
-        divisions = session.query(Comp).order_by(Comp.rank).all()
+        comp = session.query(Comp).filter_by(name=comp_name).one()
+        teams = session.query(Team).filter_by(comp_id=comp.id)
+        comps = session.query(Comp).order_by(Comp.rank).all()
         if loggedIn():  # can create a new team if logged in
             return render_template('teams.html', teams=teams,
-                                   division=division, divisions=divisions)
+                                   comp=comp, comps=comps)
         else:
             return render_template('publicTeams.html', teams=teams,
-                                   division=division, divisions=divisions)
+                                   comp=comp, comps=comps)
     finally:
         session.close()
 
 
 # Function to show selected team details
-@app.route('/division/<path:division_name>/teams/<path:team_name>/teamDetails')
-def showTeamDetails(division_name, team_name):
+@app.route('/comp/<path:comp_name>/teams/<path:team_name>/teamDetails')
+def showTeamDetails(comp_name, team_name):
     session = newSession()
     team = session.query(Team).filter_by(name=team_name).one()
     if login_session.get('user_id') == team.user_id:
         # can edit/delete depending on auth
         return render_template('teamDetails.html',
-                               team=team, division_name=division_name)
+                               team=team, comp_name=comp_name)
     else:
         return render_template('publicTeamDetails.html',
-                               team=team, division_name=division_name)
+                               team=team, comp_name=comp_name)
 
 
 # Function to add new team - any logged in user can do this
-@app.route('/division/<path:division_name>/teams/new', methods=['GET', 'POST'])
-def newTeam(division_name):
+@app.route('/comp/<path:comp_name>/teams/new', methods=['GET', 'POST'])
+def newTeam(comp_name):
     try:
         session = newSession()
         if not loggedIn():
@@ -94,31 +94,31 @@ def newTeam(division_name):
                         email=request.form['email'],
                         home=request.form['home'],
                         description=request.form['description'],
-                        division_id=request.form['division'],
+                        comp_id=request.form['comp'],
                         user_id=login_session['user_id'])
             session.add(team)
             session.commit()
             flash('New Team Added!')
-            division = session.query(Comp) \
-                .filter_by(id=request.form['division']).one()
-            return redirect(url_for('showTeams', division_name=division.name))
+            comp = session.query(Comp) \
+                .filter_by(id=request.form['comp']).one()
+            return redirect(url_for('showTeams', comp_name=comp.name))
         else:
-            divisions = session.query(Comp).order_by(Comp.rank).all()
+            comps = session.query(Comp).order_by(Comp.rank).all()
             return render_template('newTeam.html',
-                                   division_name=division_name,
-                                   divisions=divisions)
+                                   comp_name=comp_name,
+                                   comps=comps)
     finally:
         session.close()
 
 
 # Function to edit team - only available to user who created team
-@app.route('/division/<path:division_name>/teams/<path:team_name>/edit',
+@app.route('/comp/<path:comp_name>/teams/<path:team_name>/edit',
            methods=['POST', 'GET'])
-def editTeam(division_name, team_name):
+def editTeam(comp_name, team_name):
     try:
         session = newSession()
-        division = session.query(Comp).filter_by(name=division_name).one()
-        divisions = session.query(Comp).order_by(Comp.rank).all()
+        comp = session.query(Comp).filter_by(name=comp_name).one()
+        comps = session.query(Comp).order_by(Comp.rank).all()
         team = session.query(Team).filter_by(name=team_name).one()
         if team.user_id != login_session['user_id']:
             # in case of access by URL
@@ -138,26 +138,26 @@ def editTeam(division_name, team_name):
                 team.home = request.form['home']
             if request.form['description']:
                 team.description = request.form['description']
-            if request.form['division']:
-                team.division_id = request.form['division']
+            if request.form['comp']:
+                team.comp_id = request.form['comp']
             session.add(team)
             session.commit()
             flash('Team Updated!')
-            return redirect(url_for('showTeams', division_name=division_name))
+            return redirect(url_for('showTeams', comp_name=comp_name))
         else:
-            return render_template('editTeam.html', division=division,
-                                   divisions=divisions, team=team)
+            return render_template('editTeam.html', comp=comp,
+                                   comps=comps, team=team)
     finally:
         session.close()
 
 
 # Function to delete team - only available to user who created team
-@app.route('/division/<path:division_name>/teams/<path:team_name>/delete',
+@app.route('/comp/<path:comp_name>/teams/<path:team_name>/delete',
            methods=['POST', 'GET'])
-def deleteTeam(division_name, team_name):
+def deleteTeam(comp_name, team_name):
     try:
         session = newSession()
-        division = session.query(Comp).filter_by(name=division_name).one()
+        comp = session.query(Comp).filter_by(name=comp_name).one()
         team = session.query(Team).filter_by(name=team_name).one()
         if team.user_id != login_session['user_id']:
             # in case of access by URL
@@ -168,10 +168,10 @@ def deleteTeam(division_name, team_name):
             session.delete(team)
             session.commit()
             flash('Team Deleted!')
-            return redirect(url_for('showTeams', division_name=division_name))
+            return redirect(url_for('showTeams', comp_name=comp_name))
         else:
             return render_template('deleteTeam.html',
-                                   division=division, team=team)
+                                   comp=comp, team=team)
     finally:
         session.close()
 
