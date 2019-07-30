@@ -4,7 +4,7 @@ from flask import Flask, render_template, url_for, flash, jsonify, \
     request, redirect,  make_response, session as login_session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from db_setup import Base, Comp, Team,AppUser
+from db_setup import Base, Comp, Team,AppUser, Home
 import httplib2
 import requests
 import json
@@ -69,13 +69,14 @@ def showTeams(comp_name):
 def showTeamDetails(comp_name, team_name):
     session = newSession()
     team = session.query(Team).filter_by(name=team_name).one()
+    home = session.query(Home).filter_by(id=team.home_id).one()
     if login_session.get('user_id') == team.user_id:
         # can edit/delete depending on auth
         return render_template('teamDetails.html',
-                               team=team, comp_name=comp_name)
+                               team=team, comp_name=comp_name, home = home)
     else:
         return render_template('publicTeamDetails.html',
-                               team=team, comp_name=comp_name)
+                               team=team, comp_name=comp_name, home = home)
 
 
 # Function to add new team - any logged in user can do this
