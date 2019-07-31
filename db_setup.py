@@ -50,6 +50,12 @@ class Comp(Base):
     day_id = Column(Integer, ForeignKey('day.id'))
     day = relationship(Day)
 
+class Surface(Base):
+    __tablename__ = 'surface'
+
+    id = Column(Integer, primary_key = True)
+    name = Column(String(50), nullable = False)
+
 class Home(Base):
     __tablename__ = 'home'
 
@@ -58,6 +64,8 @@ class Home(Base):
     address = Column(String(300))
     lat = Column(Float)
     lon = Column(Float)
+    surface_id(Integer, ForeignKey(surface.id), nullable = false)
+    surface = relationship(Surface)
 
 class Team(Base):
     __tablename__ = 'team'
