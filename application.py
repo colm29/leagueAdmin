@@ -4,7 +4,7 @@ from flask import Flask, render_template, url_for, flash, jsonify, \
     request, redirect,  make_response, session as login_session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from db_setup import Base, Comp, Team,AppUser, Home
+from db_setup import Base, Comp, Team,AppUser, Home, Surface
 import httplib2
 import requests
 import json

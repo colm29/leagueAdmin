@@ -64,7 +64,7 @@ class Home(Base):
     address = Column(String(300))
     lat = Column(Float)
     lon = Column(Float)
-    surface_id(Integer, ForeignKey(surface.id), nullable = false)
+    surface_id = Column(Integer, ForeignKey('surface.id'), nullable = False)
     surface = relationship(Surface)
 
 class Team(Base):
