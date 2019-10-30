@@ -1,4 +1,5 @@
-fbclientsecrets.json
 truncate.txt
 __pycache__
 *.pyc
+config.py
+.idea/

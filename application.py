@@ -1,28 +1,24 @@
-#usr/bin/python3
 # # -*- coding: utf-8 -*-
 from flask import Flask, render_template, url_for, flash, jsonify, \
     request, redirect,  make_response, session as login_session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from db_setup import Base, Comp, Team,AppUser, Home, Surface
-import httplib2
 import requests
 import json
 import random
 import string
 import os
 
+import config
+
 app = Flask(__name__)
 app.secret_key = os.urandom(16)
 
-FB_ID = json.loads(
-    open('fbclientsecrets.json', 'r').read())['web']['app_id']
+FB_ID = config.FB_ID
+FB_SECRET = config.FB_SECRET
 
-FB_SECRET = json.loads(
-        open('fbclientsecrets.json', 'r').read())['web']['app_secret']
-
-
-engine = create_engine('postgresql://colm:colm@localhost/league')
+engine = create_engine(f'postgresql://{config.psql_user}:{config.psql_pw}@localhost/league')
 Base.metadata.bind = engine
 
 
@@ -71,10 +67,10 @@ def showTeamDetails(comp_name, team_name):
     team = session.query(Team).filter_by(name=team_name).one()
     home = session.query(Home).filter_by(id=team.home_id).one()
     if login_session.get('user_id') == team.user_id:
-        # can edit/delete depending on auth
+        # can edit/delete
+        #     else:depending on auth
         return render_template('teamDetails.html',
                                team=team, comp_name=comp_name, home = home)
-    else:
         return render_template('publicTeamDetails.html',
                                team=team, comp_name=comp_name, home = home)
 
@@ -203,9 +199,13 @@ def fbconnect():
     access_token = request.data
     print("access token received %s ") % access_token
 
-    url = 'https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=%s&client_secret=%s&fb_exchange_token=%s' % (FB_ID, FB_SECRET, access_token)
-    h = httplib2.Http()
-    result = h.request(url, 'GET')[1]
+    url = 'https://graph.facebook.com/oauth/access_token'
+    params = {'grant_type': 'fb_exchange_token',
+              'client_id': FB_ID,
+              'client_secret': FB_SECRET,
+              'fb_exchange_token': access_token}
+    response = requests.get(url, params=params)
+    result = response.json()[1]
 
     # Use token to get user info from API
     userinfo_url = "https://graph.facebook.com/v3.3/me"
@@ -219,9 +219,11 @@ def fbconnect():
     '''
     token = result.split(',')[0].split(':')[1].replace('"', '')
 
-    url = 'https://graph.facebook.com/v3.3/me?access_token=%s&fields=name,id,email' % token
-    h = httplib2.Http()
-    result = h.request(url, 'GET')[1]
+    url = 'https://graph.facebook.com/v3.3/me'
+    params = {'access_token': 'token',
+              'fields': 'name,id,email'}
+    response = requests.get(url, params=params)
+    result = response.json()[1]
     # print "url sent for API access:%s"% url
     # print "API JSON result: %s" % result
     data = json.loads(result)
@@ -234,10 +236,13 @@ def fbconnect():
     login_session['access_token'] = token
 
     # Get user picture
-    url = 'https://graph.facebook.com/v3.3/me/picture?access_token=%s&redirect=0&height=200&width=200' % token
-    h = httplib2.Http()
-    result = h.request(url, 'GET')[1]
-    data = json.loads(result)
+    url = 'https://graph.facebook.com/v3.3/me/picture'
+    params = {'access_token': token,
+              'redirect': '0',
+              'height': '200',
+              'width':'200'}
+    result = requests.get(url)[1]
+    data = result.json()[1]
 
     login_session['picture'] = data["data"]["url"]
 
@@ -266,9 +271,9 @@ def fbdisconnect():
     facebook_id = login_session['facebook_id']
     # The access token must me included to successfully logout
     access_token = login_session['access_token']
-    url = 'https://graph.facebook.com/%s/permissions?access_token=%s' % (facebook_id, access_token)
-    h = httplib2.Http()
-    result = h.request(url, 'DELETE')[1]
+    url = f'https://graph.facebook.com/{facebook_id}/permissions'
+    params = {'access_token': access_token}
+    result = requests.get(url,params=params)[1]
     return "you have been logged out"
 
 
@@ -276,8 +281,7 @@ def fbdisconnect():
 def loggedIn():
     if login_session.get('user_id') is None:
         return False
-    else:
-        return True
+    return True
 
 
 # Disconnect based on provider

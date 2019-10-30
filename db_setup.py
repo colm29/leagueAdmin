@@ -6,6 +6,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
 
+import config
+
 Base = declarative_base()
 
 class AppUser(Base):
@@ -123,6 +125,6 @@ class Match(Base):
 
 #########insert at end of file ##########
 
-engine = create_engine('postgresql://colm:colm@localhost/league')
+engine = create_engine(f'postgresql://{config.psql_user}:{config.psql_pw}@localhost/league')
 
 Base.metadata.create_all(engine)
