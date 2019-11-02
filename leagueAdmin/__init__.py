@@ -1,16 +1,15 @@
 # # -*- coding: utf-8 -*-
-from flask import Flask, render_template, url_for, flash, jsonify, \
-    request, redirect,  make_response, session as login_session
+from flask import Flask, render_template, url_for, flash, request, redirect,  make_response, session as login_session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from db_setup import Base, Comp, Team,AppUser, Home, Surface
+from leagueAdmin.db_setup import Base, Comp, Team, Home
 import requests
 import json
 import random
 import string
 import os
 
-import config
+from leagueAdmin import config
 
 app = Flask(__name__)
 app.secret_key = os.urandom(16)

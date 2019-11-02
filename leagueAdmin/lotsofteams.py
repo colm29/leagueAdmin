@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from db_setup import Comp, Base, Team, AppUser, Day, Section, Season, Referee, NewsItem, Match, Home
+from leagueAdmin.db_setup import Comp, Base, Team, AppUser, Day, Section, Season, Referee, Home
 
 engine = create_engine('postgresql://colm:colm@localhost/league')
 # Bind the engine to the metadata of the Base class so that the

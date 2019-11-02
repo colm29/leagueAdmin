@@ -1,12 +1,10 @@
 #usr/bin/python3
-import sys
-import psycopg2
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime,func, Boolean, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
 
-import config
+from leagueAdmin import config
 
 Base = declarative_base()
 

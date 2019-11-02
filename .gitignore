@@ -1,5 +1,6 @@
 truncate.txt
 __pycache__
 *.pyc
-config.py
+leagueAdmin/config.py
 .idea/
+tests/
