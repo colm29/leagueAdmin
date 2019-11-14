@@ -4,3 +4,5 @@ __pycache__
 leagueAdmin/config.py
 .idea/
 tests/
+leagueAdmin/lotsofteams.py.vscode/
+leagueAdmin.egg-info
