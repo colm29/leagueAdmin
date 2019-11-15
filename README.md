@@ -1,18 +1,14 @@
 # League Admin App
 This app was designed for administrators and users of an Amateur football league based in Dublin, Ireland.  There are four ranked divisions and in each division are a selection of teams.  Teams can be added and updated depending on authorisation.  Authentication is provided using facebook login.
 
-## Running the app
-1. install vagrant virtual machine and `cd` to the vagrant directory from the command line
-2. copy the following files to a new folder called catalog in the vagrant directory:
-  * application.py
-  * db_setup.py
-  * fbclientsecrets.json
-  * league.db
-3. run `vagrant up` to run the virtual machine
-4. run `vagrant ssh`
-5. `cd /vagrant/catalog` from the vagrant virtual machine
-6. from here `python application.py` to run the program
-7. In a browser window, open http://localhost:8000
+## Running the app in python
+1. After downloading the project cd to the main project root directory
+2. From within the virtual environment, to install the application run
+ `pip install --editable`
+3. `export FLASK_APP=leagueAdmin`
+4. `export FLASK_DEBUG=true`
+5. `flask run`
+6. In a browser window, open http://localhost:5000
 
 ## Divisions
 There are four Divisions in the league ranked from the top in terms of quality of teams:
