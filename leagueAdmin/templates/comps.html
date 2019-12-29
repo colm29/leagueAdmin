@@ -13,13 +13,13 @@
 
 <body>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href={{url_for('showDivisions')}}>Amateur Football League</a>
+    <a class="navbar-brand" href={{url_for('show_divisions')}}>Amateur Football League</a>
     <div class="collapse navbar-collapse" id="navbarSupportedContent"></div>
     {% block login %}
     <ul class="nav navbar-nav navbar-right">
 
       {% if "user_id" not in session %}
-      <li><a href={{url_for('showLogin')}} class="btn btn-primary">Log In</a></li>
+      <li><a href={{url_for('show_login')}} class="btn btn-primary">Log In</a></li>
       {% else %}
       <li><a href={{url_for('disconnect')}} class="btn btn-primary">Log Out</a></li>
       {% endif %}
@@ -52,7 +52,7 @@
             <h5 class="card-title">Divisions</h5>
             <div class="list-group list-group-flush">
               {% for d in comps %}
-              <a href={{url_for('showTeams', comp_name = d.name)}} class="list-group-item list-group-item-action">{{d.name}}</a>
+              <a href={{url_for('show_teams', comp_name = d.name)}} class="list-group-item list-group-item-action">{{d.name}}</a>
               {% endfor %}
             </div>
           </div>

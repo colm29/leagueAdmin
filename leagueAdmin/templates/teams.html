@@ -7,7 +7,7 @@
       <h5 class="card-title">Divisions</h5>
       <div class="list-group list-group-flush">
         {% for d in comps %}
-        <a href={{url_for("showTeams", comp_name = d.name)}} class="list-group-item list-group-item-action">{{d.name}}</a>
+        <a href={{url_for("show_teams", comp_name = d.name)}} class="list-group-item list-group-item-action">{{d.name}}</a>
         {% endfor %}
       </div>
       </div>
@@ -15,13 +15,13 @@
         <h5 class="card-title">{{comp.name}} Teams</h5>
         <div class="list-group list-group-flush">
           {% for t in teams %}
-          <a href={{url_for('showTeamDetails', comp_name = comp.name, team_name = t.name)}} class="list-group-item list-group-item-action">{{t.name}}</a>
+          <a href={{url_for('show_team_details', comp_name = comp.name, team_name = t.name)}} class="list-group-item list-group-item-action">{{t.name}}</a>
           {% endfor %}
         </div>
       </div>
       {% block newButton %}
         <div class="col">
-        <a href={{url_for('newTeam', comp_name  = comp.name)}} class="btn btn-success" role="button">Create New Team</a>
+        <a href={{url_for('new_team', comp_name  = comp.name)}} class="btn btn-success" role="button">Create New Team</a>
         </div>
       {% endblock %}
     </div>

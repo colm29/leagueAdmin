@@ -3,21 +3,19 @@ import random
 import string
 import json
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 from flask import render_template, url_for, flash, request, redirect,  make_response, session as login_session
 
-from leagueAdmin.db_setup import Base, Comp, Team, Home
-from .services import newSession, loggedIn, createUser, updateUser, getUserID
+from leagueAdmin.db_setup import Comp, Team, Home
+from .services import new_session, is_logged_in, create_user, update_user, get_user_id
 from leagueAdmin import app
 from . import config
 
 # Route for initial page - show all categories(Divisions in Football League)
 @app.route('/')
 @app.route('/comps')
-def showDivisions():
+def show_divisions():
     try:
-        session = newSession()  # creates a new session
+        session = new_session()
         comps = session.query(Comp).order_by(Comp.rank).all()
         return render_template('comps.html', comps=comps)
     finally:
@@ -28,13 +26,13 @@ def showDivisions():
 # Function to show all teams (items) in a Comp
 @app.route('/comp/<path:comp_name>')
 @app.route('/comp/<path:comp_name>/teams')
-def showTeams(comp_name):
+def show_teams(comp_name):
     try:
-        session = newSession()
+        session = new_session()
         comp = session.query(Comp).filter_by(name=comp_name).one()
         teams = session.query(Team).filter_by(comp_id=comp.id)
         comps = session.query(Comp).order_by(Comp.rank).all()
-        if loggedIn():  # can create a new team if logged in
+        if is_logged_in():  # can create a new team if logged in
             return render_template('teams.html', teams=teams,
                                    comp=comp, comps=comps)
         else:
@@ -46,8 +44,8 @@ def showTeams(comp_name):
 
 # Function to show selected team details
 @app.route('/comp/<path:comp_name>/teams/<path:team_name>/teamDetails')
-def showTeamDetails(comp_name, team_name):
-    session = newSession()
+def show_team_details(comp_name, team_name):
+    session = new_session()
     team = session.query(Team).filter_by(name=team_name).one()
     home = session.query(Home).filter_by(id=team.home_id).one()
     if login_session.get('user_id') == team.user_id:
@@ -61,10 +59,10 @@ def showTeamDetails(comp_name, team_name):
 
 # Function to add new team - any logged in user can do this
 @app.route('/comp/<path:comp_name>/teams/new', methods=['GET', 'POST'])
-def newTeam(comp_name):
+def new_team(comp_name):
     try:
-        session = newSession()
-        if not loggedIn():
+        session = new_session()
+        if not is_logged_in():
             return "<script>function myFunction() {alert('You are not authorised to create a \
                     new team.  Please log in to create a new team.')\
                         ;}</script><body onload='myFunction()''>"
@@ -95,9 +93,9 @@ def newTeam(comp_name):
 # Function to edit team - only available to user who created team
 @app.route('/comp/<path:comp_name>/teams/<path:team_name>/edit',
            methods=['POST', 'GET'])
-def editTeam(comp_name, team_name):
+def edit_team(comp_name, team_name):
     try:
-        session = newSession()
+        session = new_session()
         comp = session.query(Comp).filter_by(name=comp_name).one()
         comps = session.query(Comp).order_by(Comp.rank).all()
         team = session.query(Team).filter_by(name=team_name).one()
@@ -135,9 +133,9 @@ def editTeam(comp_name, team_name):
 # Function to delete team - only available to user who created team
 @app.route('/comp/<path:comp_name>/teams/<path:team_name>/delete',
            methods=['POST', 'GET'])
-def deleteTeam(comp_name, team_name):
+def delete_team(comp_name, team_name):
     try:
-        session = newSession()
+        session = new_session()
         comp = session.query(Comp).filter_by(name=comp_name).one()
         team = session.query(Team).filter_by(name=team_name).one()
         if team.user_id != login_session['user_id']:
@@ -158,7 +156,7 @@ def deleteTeam(comp_name, team_name):
 
 
 @app.route('/login')
-def showLogin():
+def show_login():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in range(32))
     login_session['state'] = state
@@ -170,7 +168,7 @@ populates login_session with user details'''
 
 
 @app.route('/fbconnect', methods=['POST'])
-def fbconnect():
+def fb_connect():
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter'), 401)
         response.headers['Content-Type'] = 'application/json'
@@ -226,12 +224,12 @@ def fbconnect():
     login_session['picture'] = data["data"]["url"]
 
     # see if user exists
-    user_id = getUserID(login_session['email'])
+    user_id = get_user_id(login_session['email'])
     if not user_id:
-        user_id = createUser(login_session)
+        user_id = create_user(login_session)
     login_session['user_id'] = user_id
     # updates the username and picture for a stored user if they have changed
-    updateUser(user_id)
+    update_user(user_id)
 
     # Output HTML returned
     output = ''
@@ -246,7 +244,7 @@ def fbconnect():
 
 
 @app.route('/fbdisconnect')
-def fbdisconnect():
+def fb_disconnect():
     facebook_id = login_session['facebook_id']
     # The access token must me included to successfully logout
     access_token = login_session['access_token']
@@ -261,7 +259,7 @@ def fbdisconnect():
 def disconnect():
     if 'provider' in login_session:
         if login_session['provider'] == 'facebook':
-            fbdisconnect()
+            fb_disconnect()
             del login_session['facebook_id']
         del login_session['username']
         del login_session['email']

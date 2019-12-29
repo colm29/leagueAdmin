@@ -3,7 +3,7 @@
 
 <div class="card-header bg-transparent"><strong>Change Team Details</strong></div>
 <div class="card-body pb-2">
-  <form action={{url_for('editTeam', comp_name = comp.name, team_name = team.name)}} method="post">
+  <form action={{url_for('edit_team', comp_name = comp.name, team_name = team.name)}} method="post">
     <div class="form-row">
       <div class="form-group col-6">
         <label class="lead" for="name">Name</label>
@@ -31,7 +31,7 @@
         <button type="submit" class="btn btn-primary">Change</button>
       </div>
       <div class="form-group col-1">
-        <a class="btn btn-primary" role="button" href={{url_for('showTeams', comp_name = comp.name)}}>Cancel</a>
+        <a class="btn btn-primary" role="button" href={{url_for('show_teams', comp_name = comp.name)}}>Cancel</a>
       </div>
     </div>
   </form>

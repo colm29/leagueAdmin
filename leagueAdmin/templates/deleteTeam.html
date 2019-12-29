@@ -2,9 +2,9 @@
 {% block main %}
 <h5 class="card-title pl-2 pt-2">Are you sure you want to delete team {{team.name}}?</h5>
 <div class="edit-buttons">
-  <form action={{url_for('deleteTeam',comp_name = division.name, team_name = team.name)}} method="post">
+  <form action={{url_for('delete_team',comp_name = division.name, team_name = team.name)}} method="post">
     <button type="submit" class="btn btn-danger">Delete</button>
-    <a href={{url_for('showTeams', comp_name = division.name)}} class="btn btn-primary" role="button">Cancel</a>
+    <a href={{url_for('show_teams', comp_name = division.name)}} class="btn btn-primary" role="button">Cancel</a>
 </div>
 </form>
 {% endblock %}

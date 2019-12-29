@@ -4,7 +4,7 @@ This app was designed for administrators and users of an Amateur football league
 ## Running the app in python
 1. After downloading the project cd to the main project root directory
 2. From within the virtual environment, to install the application run
- `pip install --editable`
+ `pip install . --editable`
 3. `export FLASK_APP=leagueAdmin`
 4. `export FLASK_DEBUG=true`
 5. `flask run`

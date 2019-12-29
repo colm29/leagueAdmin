@@ -2,7 +2,6 @@
 from flask import Flask
 import os
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 from leagueAdmin.db_setup import Base
 
 from . import config

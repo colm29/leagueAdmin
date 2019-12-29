@@ -10,10 +10,10 @@
 <div class="row">
   <div class="edit-buttons">
     {% block authButtons %}
-    <a href={{url_for("editTeam",comp_name = comp_name, team_name = team.name)}} class="btn btn-primary mx-1" role="button">Edit</a>
-    <a href={{url_for("deleteTeam",comp_name = comp_name, team_name = team.name)}} class="btn btn-primary mx-1" role="button">Delete</a>
+    <a href={{url_for("edit_team",comp_name = comp_name, team_name = team.name)}} class="btn btn-primary mx-1" role="button">Edit</a>
+    <a href={{url_for("delete_team",comp_name = comp_name, team_name = team.name)}} class="btn btn-primary mx-1" role="button">Delete</a>
     {% endblock %}
-    <a class="btn btn-primary mx-1" role="button" href={{url_for('showTeams', comp_name = comp_name)}}>Back</a>
+    <a class="btn btn-primary mx-1" role="button" href={{url_for('show_teams', comp_name = comp_name)}}>Back</a>
   </div>
 </div>
 </div>

@@ -1,45 +1,36 @@
-# # -*- coding: utf-8 -*-
-from flask import Flask, render_template, url_for, flash, request, redirect,  make_response, session as login_session
-from sqlalchemy import create_engine
+from flask import session as login_session
 from sqlalchemy.orm import sessionmaker
-import requests
-import json
-import random
-import string
-import os
-
 from .db_setup import AppUser, engine
 
 
-def newSession():
-    DBSession = sessionmaker(bind=engine)
-    session = DBSession()
+def new_session():
+    db_session = sessionmaker(bind=engine)
+    session = db_session()
     return session
 
 
-# Function to check if user is logged in
-def loggedIn():
+def is_logged_in():
     if login_session.get('user_id') is None:
         return False
     return True
 
 
 # user functions
-def getUserID(email):
+def get_user_id(email):
     try:
         session = newSession()
         user = session.query(User).filter_by(email=email).one()
         return user.id
-    except:
+    except Exception:
         return None
     finally:
         session.close()
 
 
-def getUserInfo(user_id):
+def get_user_info(user_id):
     try:
-        session = newSession()
-        user = session.query(User).filter_by(id=user_id).one()
+        session = new_session()
+        user = session.query(AppUser).filter_by(id=user_id).one()
         if user.picture != login_session['picture']:
             user.picture = login_session['picture']
         elif user.name != login_session['username']:
@@ -47,15 +38,15 @@ def getUserInfo(user_id):
         session.add(user)
         session.commit()
         return user
-    except:
+    except Exception:
         return None
     finally:
         session.close()
 
 
-def updateUser(user_id):
+def update_user(user_id):
     try:
-        session = newSession()
+        session = new_session()
         user = session.query(AppUser).filter_by(id=user_id).one()
         if user.picture != login_session['picture']:
             user.picture = login_session['picture']
@@ -67,11 +58,11 @@ def updateUser(user_id):
         session.close()
 
 
-def createUser(login_session):
-    session = newSession()
-    newUser = AppUser(name=login_session['username'], email=login_session
+def create_user(login_session):
+    session = new_session()
+    new_user = AppUser(name=login_session['username'], email=login_session
                       ['email'], picture=login_session['picture'])
-    session.add(newUser)
+    session.add(new_user)
     session.commit()
     user = session.query(AppUser).filter_by(email=login_session['email']).one()
     return user.id

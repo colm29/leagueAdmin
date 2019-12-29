@@ -13,7 +13,7 @@
 <div id="fb-root"></div>
 <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v3.3&appId={{fbclient_id}}&autoLogAppEvents=1"></script>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href={{url_for('showDivisions')}}>Amateur Football League</a>
+  <a class="navbar-brand" href={{url_for('show_divisions')}}>Amateur Football League</a>
   <div class="collapse navbar-collapse" id="navbarSupportedContent"></div>
 </nav>
 <div id="result"></div>
@@ -73,7 +73,7 @@ function sendTokenToServer() {
   <div class="card">
     <h5 class="card-title pt-3" align="center">Log In</h5><br><br>
     <div class="fb-login-button" align='center' data-width="" data-size="large" data-button-type="continue_with" data-use-continue-as="true" data-scope="public_profile,email" data-onlogin="sendTokenToServer();" align='center'></div>
-    <a href={{url_for('showDivisions')}} class="btn btn-primary my-4 mx-auto" role="button" align="center">Cancel</a>
+    <a href={{url_for('show_divisions')}} class="btn btn-primary my-4 mx-auto" role="button" align="center">Cancel</a>
   </div>
 </div>
 </body>

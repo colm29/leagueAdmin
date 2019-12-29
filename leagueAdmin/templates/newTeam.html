@@ -2,7 +2,7 @@
 {% block main %}
 <div class="card-header bg-transparent"><strong>Add New Team</strong></div>
 <div class="card-body pb-3">
-  <form action={{url_for("newTeam", comp_name = comp_name)}} method="post">
+  <form action={{url_for("new_team", comp_name = comp_name)}} method="post">
     <div class="form-row">
       <div class="form-group col-6">
         <label class="lead" for="name">Name</label>
@@ -30,7 +30,7 @@
         <button type="submit" class="btn btn-primary">Create</button>
       </div>
       <div class="form-group-col-1">
-        <a class="btn btn-primary" role="button" href={{url_for('showTeams', comp_name = comp_name)}}>Cancel</a>
+        <a class="btn btn-primary" role="button" href={{url_for('show_teams', comp_name = comp_name)}}>Cancel</a>
       </div>
     </div>
   </form>
