@@ -18,35 +18,35 @@ DBSession = sessionmaker(bind=engine)
 # session.rollback()
 session = DBSession()
 
-season1 = Season(name = '2019', start = '2019-04-01', end = '2019-11-30')
+season1 = Season(name='2020', start = '2020-04-01', end = '2020-11-30')
 session.add(season1)
 session.commit()
 
-sec1 = Section(name = 'North')
+sec1 = Section(name='North')
 session.add(sec1)
 session.commit()
 
-ref1 = Referee(name = 'John Murphy', phone = '087 1111111')
+ref1 = Referee(name='John Murphy', phone='087 1111111')
 session.add(ref1)
-ref2 = Referee(name = 'Eddie Murphy', phone = '087 2222222')
+ref2 = Referee(name='Eddie Murphy', phone='087 2222222')
 session.add(ref2)
-ref3= Referee(name = 'Tommy Murphy', phone = '087 3333333')
+ref3= Referee(name='Tommy Murphy', phone='087 3333333')
 session.add(ref3)
 session.commit()
 
-user1 = AppUser(name = 'Colm Faherty', email = 'colm29@gmail.com', picture = 'colm.png')
+user1 = AppUser(name='Colm Faherty', email='colm29@gmail.com', picture='colm.png')
 session.add(user1)
 session.commit()
 
-user2 = AppUser(name = 'Someone Else', email = 'someoneelse@someothermail.com', picture = 'anotherpic.png')
+user2 = AppUser(name='Someone Else', email='someoneelse@someothermail.com', picture='anotherpic.png')
 session.add(user2)
 session.commit()
 
-user3 = AppUser(name = 'Seamas Doe', email = 'seamasdoe@smtp.com', picture = 'sheamie.png')
+user3 = AppUser(name='Seamas Doe', email='seamasdoe@smtp.com', picture='sheamie.png')
 session.add(user3)
 session.commit()
 
-user4 = AppUser(name = 'Alex Faherty', email = 'oreolover@address.ie', picture = 'lexxie.jpg')
+user4 = AppUser(name='Alex Faherty', email='oreolover@address.ie', picture='lexxie.jpg')
 
 session.add(user4)
 session.commit()
@@ -72,22 +72,22 @@ session.add(day7)
 session.commit()
 
 # teams for Premier League North
-division1 = Comp(name="Premier Division North", rank = 1, day = day6, section = sec1)
+division1 = Comp(name="Premier Division North", rank=1, day=day6, section=sec1)
 
 session.add(division1)
 session.commit()
 
-division2 = Comp(name="Division 1 North", rank = 2, day = day6, section = sec1)
+division2 = Comp(name="Division 1 North", rank=2, day=day6, section=sec1)
 
 session.add(division2)
 session.commit()
 
-division3 = Comp(name="Division 2 North", rank = 3, day = day6, section = sec1)
+division3 = Comp(name="Division 2 North", rank=3, day=day6, section=sec1)
 
 session.add(division1)
 session.commit()
 
-division4 = Comp(name="Division 3 North", rank = 4, day = day6, section = sec1)
+division4 = Comp(name="Division 3 North", rank=4, day=day6, section=sec1)
 
 session.add(division1)
 session.commit()
@@ -98,44 +98,36 @@ session.add(surf1)
 session.add(surf2)
 session.commit()
 
-home1 = Home(name = 'Beaumont Convent', address = 'Dublin 9', surface = surf1)
+home1 = Home(name='Beaumont Convent', address='Dublin 9', surface=surf1)
 session.add(home1)
-home2 = Home(name = 'Fr. Collins Park', address = 'Donaghmede', surface = surf1)
+home2 = Home(name='Fr. Collins Park', address='Donaghmede', surface=surf1)
 session.add(home2)
-home3 = Home(name = 'Athletic Park', address = 'Swords', surface = surf1)
+home3 = Home(name='Athletic Park', address='Swords', surface=surf1)
 session.add(home3)
-home4 = Home(name = 'ASt Annes Park', address = 'Raheny', surface = surf1)
+home4 = Home(name='St Annes Park', address='Raheny', surface=surf1)
 session.add(home4)
 session.commit()
 
 
-team1 = Team(name="Celtic Park FC", email = 'colm29@gmail.com', home = home1, comp = division3, appuser = user1)
+team1 = Team(name="Celtic Park FC", email='colm29@gmail.com', home=home1, comp=division3, appuser=user1)
 
 session.add(team1)
 session.commit()
 
 
-team1 = Team(name="Trinity Donaghmede B", email = 'trindon@anymail.com', home = home2, comp=division3, appuser = user2)
+team1 = Team(name="Trinity Donaghmede B", email='trindon@anymail.com', home=home2, comp=division3, appuser=user2)
 
 session.add(team1)
 session.commit()
 
-team1 = Team(name="Swords Celtic 35s", email = 'sc@swordsvillage.ie', home = home3, comp=division3, appuser = user2)
+team1 = Team(name="Swords Celtic 35s", email='sc@swordsvillage.ie', home=home3, comp=division3, appuser=user2)
 
 session.add(team1)
 session.commit()
 
-team1 = Team(name="Marino Athletic",  email = 'mafc@amailserver.com', home = home4, comp=division3, appuser = user2)
+team1 = Team(name="Marino Athletic",  email='mafc@amailserver.com', home=home4, comp=division3, appuser=user2)
 
 session.add(team1)
 session.commit()
-
-
-
-session.add(team1)
-session.commit()
-
-
-
 
 print("added teams!")

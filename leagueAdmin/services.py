@@ -18,7 +18,7 @@ def is_logged_in():
 # user functions
 def get_user_id(email):
     try:
-        session = newSession()
+        session = new_session()
         user = session.query(User).filter_by(email=email).one()
         return user.id
     except Exception:
