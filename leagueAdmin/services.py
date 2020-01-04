@@ -1,12 +1,6 @@
-from flask import session as login_session
-from sqlalchemy.orm import sessionmaker
-from .db_setup import AppUser, engine
-
-
-def new_session():
-    db_session = sessionmaker(bind=engine)
-    session = db_session()
-    return session
+from .models import AppUser
+from .views import login_session
+from . import db
 
 
 def is_logged_in():
@@ -15,54 +9,44 @@ def is_logged_in():
     return True
 
 
-# user functions
+# AppUser functions
 def get_user_id(email):
     try:
-        session = new_session()
-        user = session.query(User).filter_by(email=email).one()
+        user = db.session.query(AppUser).filter_by(email=email).one()
         return user.id
     except Exception:
         return None
-    finally:
-        session.close()
 
 
 def get_user_info(user_id):
     try:
-        session = new_session()
-        user = session.query(AppUser).filter_by(id=user_id).one()
+        user = db.session.query(AppUser).filter_by(id=user_id).one()
         if user.picture != login_session['picture']:
             user.picture = login_session['picture']
-        elif user.name != login_session['username']:
-            user.name = login_session['username']
-        session.add(user)
-        session.commit()
-        return user
+        elif user.name != login_session['AppUsername']:
+            user.name = login_session['AppUsername']
+        db.session.add(AppUser)
+        db.session.commit()
+        return AppUser
     except Exception:
         return None
     finally:
-        session.close()
+        db.session.close()
 
 
 def update_user(user_id):
-    try:
-        session = new_session()
-        user = session.query(AppUser).filter_by(id=user_id).one()
-        if user.picture != login_session['picture']:
-            user.picture = login_session['picture']
-        elif user.name != login_session['username']:
-            user.name = login_session['username']
-        session.add(user)
-        session.commit()
-    finally:
-        session.close()
+    user = db.session.query(AppUser).filter_by(id=user_id).one()
+    if user.picture != login_session['picture']:
+        user.picture = login_session['picture']
+    elif user.name != login_session['AppUsername']:
+        user.name = login_session['AppUsername']
+    db.session.add(user)
+    db.session.commit()
 
 
-def create_user(login_session):
-    session = new_session()
-    new_user = AppUser(name=login_session['username'], email=login_session
-                      ['email'], picture=login_session['picture'])
-    session.add(new_user)
-    session.commit()
-    user = session.query(AppUser).filter_by(email=login_session['email']).one()
+def create_user():
+    new_user = AppUser(name=login_session['username'], email=login_session['email'], picture=login_session['picture'])
+    db.session.add(new_user)
+    db.session.commit()
+    user = db.session.query(AppUser).filter_by(email=login_session['email']).one()
     return user.id
