@@ -59,8 +59,8 @@ class Team(db.Model):
     home = db.relationship(Home)
     comp_id = db.Column(db.Integer, db.ForeignKey('comp.id'))
     comp = db.relationship(Comp)
-    user_id = db.Column(db.Integer, db.ForeignKey('appuser.id'))
-    appuser = db.relationship(AppUser)
+    user_id = db.Column(db.Integer, db.ForeignKey('app_user.id'))
+    app_user = db.relationship(AppUser)
 
 
 class Referee(db.Model):
@@ -71,19 +71,34 @@ class Referee(db.Model):
 
 class NewsItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100))
     message = db.Column(db.String(500), nullable=False)
     createdOn = db.Column(db.DateTime(timezone=True), server_default=db.func.now(), nullable=False)
-    createdBy = db.Column(db.Integer, db.ForeignKey('appuser.id'), nullable=False)
+    createdBy = db.Column(db.Integer, db.ForeignKey('app_user.id'), nullable=False)
     user1 = db.relationship(AppUser, foreign_keys='NewsItem.createdBy')
     updatedOn = db.Column(db.DateTime)
-    updatedBy = db.Column(db.Integer, db.ForeignKey('appuser.id'))
+    updatedBy = db.Column(db.Integer, db.ForeignKey('app_user.id'))
     user2 = db.relationship(AppUser,  foreign_keys='NewsItem.updatedBy')
+
+
+class FixtureRound(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime, nullable=False)
+    season_id = db.Column(db.Integer, db.ForeignKey('season.id'), nullable=False)
+    season = db.relationship(Season)
+    comp_id = db.Column(db.Integer, db.ForeignKey('comp.id'), nullable=False)
+    comp = db.relationship(Comp)
+    created_on = db.Column(db.DateTime(timezone=True), server_default=db.func.now(), nullable=False)
+    created_by = db.Column(db.Integer, db.ForeignKey('app_user.id'), nullable=False)
+    updatedOn = db.Column(db.DateTime)
+    updatedBy = db.Column(db.Integer, db.ForeignKey('app_user.id'))
 
 
 class Match(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    comp_id = db.Column(db.Integer, db.ForeignKey('comp.id'), nullable=False)
-    comp = db.relationship(Comp)
+    fixture_round_id = db.Column(db.Integer, db.ForeignKey('fixture_round.id'), nullable=False)
+    fixture_round = db.relationship(FixtureRound)
+    datetime_override = db.Column(db.DateTime)
     homeTeam = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=False)
     team1 = db.relationship(Team, foreign_keys='Match.homeTeam')
     awayTeam = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=False)
@@ -95,8 +110,8 @@ class Match(db.Model):
     referee_id = db.Column(db.Integer, db.ForeignKey('referee.id'), nullable=False)
     referee = db.relationship(Referee)
     createdOn = db.Column(db.DateTime(timezone=True), server_default=db.func.now(), nullable=False)
-    createdBy = db.Column(db.Integer, db.ForeignKey('appuser.id'), nullable=False)
+    createdBy = db.Column(db.Integer, db.ForeignKey('app_user.id'), nullable=False)
     user1 = db.relationship(AppUser, foreign_keys='Match.createdBy')
     updatedOn = db.Column(db.DateTime)
-    updatedBy = db.Column(db.Integer, db.ForeignKey('appuser.id'))
+    updatedBy = db.Column(db.Integer, db.ForeignKey('app_user.id'))
     user2 = db.relationship(AppUser, foreign_keys='Match.updatedBy')

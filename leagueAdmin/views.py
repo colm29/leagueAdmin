@@ -5,7 +5,7 @@ import json
 
 from flask import render_template, url_for, flash, request, redirect,  make_response, session as login_session
 
-from leagueAdmin.models import Comp, Team, Home
+from leagueAdmin.models import Comp, Team, Home, NewsItem
 from .services import is_logged_in, create_user, update_user, get_user_id
 from leagueAdmin import app, db
 from . import config
@@ -13,9 +13,10 @@ from . import config
 
 @app.route('/')
 @app.route('/comps')
-def show_divisions():
+def show_divisions_and_news():
     comps = db.session.query(Comp).order_by(Comp.rank).all()
-    return render_template('comps.html', comps=comps)
+    news = db.session.query(NewsItem).order_by(db.desc(NewsItem.createdOn)).limit(10).all()
+    return render_template('comps.html', comps=comps, news=news)
 
 
 @app.route('/comp/<path:comp_name>')

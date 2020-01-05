@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from leagueAdmin.models import Comp, Base, Team, AppUser, Day, Section, Season, Referee, Home, Surface
+from leagueAdmin.models import Comp, NewsItem, Team, AppUser, Day, Section, Season, Referee, Home, Surface
 
 engine = create_engine('postgresql://colm:colm@localhost/league')
 # Bind the engine to the metadata of the Base class so that the
@@ -18,7 +18,7 @@ DBSession = sessionmaker(bind=engine)
 # session.rollback()
 session = DBSession()
 
-season1 = Season(name='2020', start = '2020-04-01', end = '2020-11-30')
+season1 = Season(name='2020', start='2020-04-01', end='2020-11-30')
 session.add(season1)
 session.commit()
 
@@ -130,4 +130,8 @@ team1 = Team(name="Marino Athletic",  email='mafc@amailserver.com', home=home4, 
 session.add(team1)
 session.commit()
 
+news1 = NewsItem(title='Daly Resigns', message='The Celtic Park player manager has quit his role. A source said that '
+                                               'after 20 years managing he has decided to give more time to his playing'
+                                               ' career.',
+                 created_by=1)
 print("added teams!")
