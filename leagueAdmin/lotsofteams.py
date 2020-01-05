@@ -1,8 +1,10 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
 
 from leagueAdmin.models import Comp, NewsItem, Team, AppUser, Day, Section, Season, Referee, Home, Surface
 
+Base = declarative_base()
 engine = create_engine('postgresql://colm:colm@localhost/league')
 # Bind the engine to the metadata of the Base class so that the
 # declaratives can be accessed through a DBSession instance
@@ -34,7 +36,7 @@ ref3= Referee(name='Tommy Murphy', phone='087 3333333')
 session.add(ref3)
 session.commit()
 
-user1 = AppUser(name='Colm Faherty', email='colm29@gmail.com', picture='colm.png')
+user1 = AppUser(name='Colm Faherty', email='myemail@gmail.com', picture='colm.png')
 session.add(user1)
 session.commit()
 
@@ -109,29 +111,34 @@ session.add(home4)
 session.commit()
 
 
-team1 = Team(name="Celtic Park FC", email='colm29@gmail.com', home=home1, comp=division3, appuser=user1)
+team1 = Team(name="Celtic Park FC", email='colm29@gmail.com', home=home1, comp=division3, app_user=user1)
 
 session.add(team1)
 session.commit()
 
 
-team1 = Team(name="Trinity Donaghmede B", email='trindon@anymail.com', home=home2, comp=division3, appuser=user2)
+team1 = Team(name="Trinity Donaghmede B", email='trindon@anymail.com', home=home2, comp=division3, app_user=user2)
 
 session.add(team1)
 session.commit()
 
-team1 = Team(name="Swords Celtic 35s", email='sc@swordsvillage.ie', home=home3, comp=division3, appuser=user2)
+team1 = Team(name="Swords Celtic 35s", email='sc@swordsvillage.ie', home=home3, comp=division3, app_user=user2)
 
 session.add(team1)
 session.commit()
 
-team1 = Team(name="Marino Athletic",  email='mafc@amailserver.com', home=home4, comp=division3, appuser=user2)
+team1 = Team(name="Marino Athletic",  email='mafc@amailserver.com', home=home4, comp=division3, app_user=user2)
 
 session.add(team1)
 session.commit()
 
-news1 = NewsItem(title='Daly Resigns', message='The Celtic Park player manager has quit his role. A source said that '
-                                               'after 20 years managing he has decided to give more time to his playing'
-                                               ' career.',
+news1 = NewsItem(title='Season Kickoff', message='The new 2020 season will kick off in late March  Watch this space.',
                  created_by=1)
+news2 = NewsItem(title='Keeper Wanted', message='celtic Park are looking for a goalkeeper.  Contact their manager if '
+                                                'interested.',
+                 created_by=1)
+session.add(news1)
+session.add(news2)
+session.commit()
+
 print("added teams!")

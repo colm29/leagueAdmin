@@ -15,7 +15,7 @@ from . import config
 @app.route('/comps')
 def show_divisions_and_news():
     comps = db.session.query(Comp).order_by(Comp.rank).all()
-    news = db.session.query(NewsItem).order_by(db.desc(NewsItem.createdOn)).limit(10).all()
+    news = db.session.query(NewsItem).order_by(db.desc(NewsItem.created_on)).limit(10).all()
     return render_template('comps.html', comps=comps, news=news)
 
 
