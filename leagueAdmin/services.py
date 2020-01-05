@@ -1,4 +1,4 @@
-from .models import AppUser
+from .models import AppUser, FixtureRound
 from .views import login_session
 from . import db
 
@@ -50,3 +50,9 @@ def create_user():
     db.session.commit()
     user = db.session.query(AppUser).filter_by(email=login_session['email']).one()
     return user.id
+
+
+def create_fixture_round(date, comp_id):
+    # need to dynamically add season and user below
+    fixture_round = FixtureRound(date=date, season_id=1, comp_id=comp_id, created_by=1)
+    db.session.add(fixture_round)
