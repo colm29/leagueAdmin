@@ -6,6 +6,12 @@ class AppUser(db.Model):
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(80), nullable=False)
     picture = db.Column(db.String(80))
+    # created_on = db.Column(db.DateTime(timezone=True), server_default=db.func.now(), nullable=False)
+    # created_by = db.Column(db.Integer, db.ForeignKey('app_user.id'), nullable=False)
+    # user1 = db.relationship(AppUser, foreign_keys='app_user.created_by', nullable=False)
+    # updated_on = db.Column(db.DateTime)
+    # updated_by = db.Column(db.Integer, db.ForeignKey('app_user.id'))
+    # user2 = db.relationship(AppUser, foreign_keys='app_user.updated_by')
 
 
 class Season(db.Model):
@@ -13,11 +19,23 @@ class Season(db.Model):
     name = db.Column(db.String, default=str(db.func.year()), nullable=False)
     start = db.Column(db.DateTime)
     end = db.Column(db.DateTime)
+    created_on = db.Column(db.DateTime(timezone=True), server_default=db.func.now(), nullable=False)
+    created_by = db.Column(db.Integer, db.ForeignKey('app_user.id'), nullable=False)
+    user1 = db.relationship(AppUser, foreign_keys='season.created_by', nullable=False)
+    updated_on = db.Column(db.DateTime)
+    updated_by = db.Column(db.Integer, db.ForeignKey('app_user.id'))
+    user2 = db.relationship(AppUser, foreign_keys='season.updated_by')
 
 
 class Section(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
+    created_on = db.Column(db.DateTime(timezone=True), server_default=db.func.now(), nullable=False)
+    created_by = db.Column(db.Integer, db.ForeignKey('app_user.id'), nullable=False)
+    user1 = db.relationship(AppUser, foreign_keys='section.created_by', nullable=False)
+    updated_on = db.Column(db.DateTime)
+    updated_by = db.Column(db.Integer, db.ForeignKey('app_user.id'))
+    user2 = db.relationship(AppUser, foreign_keys='section.updated_by')
 
 
 class Day(db.Model):
@@ -29,16 +47,28 @@ class Comp(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
     rank = db.Column(db.Integer, nullable=False)
-    section_id = db.Column(db.Integer, db.ForeignKey('section.id'))
+    section_id = db.Column(db.Integer, db.ForeignKey('section.id'), nullable=False)
     section = db.relationship(Section)
     cup = db.Column(db.Boolean, default=0, nullable=False)
     day_id = db.Column(db.Integer, db.ForeignKey('day.id'))
     day = db.relationship(Day)
+    created_on = db.Column(db.DateTime(timezone=True), server_default=db.func.now(), nullable=False)
+    created_by = db.Column(db.Integer, db.ForeignKey('app_user.id'), nullable=False)
+    user1 = db.relationship(AppUser, foreign_keys='comp.created_by', nullable=False)
+    updated_on = db.Column(db.DateTime)
+    updated_by = db.Column(db.Integer, db.ForeignKey('app_user.id'))
+    user2 = db.relationship(AppUser, foreign_keys='comp.updated_by')
 
 
 class Surface(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
+    created_on = db.Column(db.DateTime(timezone=True), server_default=db.func.now(), nullable=False)
+    created_by = db.Column(db.Integer, db.ForeignKey('app_user.id'), nullable=False)
+    user1 = db.relationship(AppUser, foreign_keys='surface.created_by', nullable=False)
+    updated_on = db.Column(db.DateTime)
+    updated_by = db.Column(db.Integer, db.ForeignKey('app_user.id'))
+    user2 = db.relationship(AppUser, foreign_keys='surface.updated_by')
 
 
 class Home(db.Model):
@@ -49,6 +79,12 @@ class Home(db.Model):
     lon = db.Column(db.Float)
     surface_id = db.Column(db.Integer, db.ForeignKey('surface.id'), nullable=False)
     surface = db.relationship(Surface)
+    created_on = db.Column(db.DateTime(timezone=True), server_default=db.func.now(), nullable=False)
+    created_by = db.Column(db.Integer, db.ForeignKey('app_user.id'), nullable=False)
+    user1 = db.relationship(AppUser, foreign_keys='home.created_by', nullable=False)
+    updated_on = db.Column(db.DateTime)
+    updated_by = db.Column(db.Integer, db.ForeignKey('app_user.id'))
+    user2 = db.relationship(AppUser, foreign_keys='home.updated_by')
 
 
 class Team(db.Model):
@@ -57,16 +93,38 @@ class Team(db.Model):
     email = db.Column(db.String(80))
     home_id = db.Column(db.Integer, db.ForeignKey('home.id'), nullable=False)
     home = db.relationship(Home)
-    comp_id = db.Column(db.Integer, db.ForeignKey('comp.id'))
+    created_on = db.Column(db.DateTime(timezone=True), server_default=db.func.now(), nullable=False)
+    created_by = db.Column(db.Integer, db.ForeignKey('app_user.id'), nullable=False)
+    user1 = db.relationship(AppUser, foreign_keys='team.created_by', nullable=False)
+    updated_on = db.Column(db.DateTime)
+    updated_by = db.Column(db.Integer, db.ForeignKey('app_user.id'))
+    user2 = db.relationship(AppUser, foreign_keys='team.updated_by')
+
+
+class CompReg(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    comp_id = db.Column(db.Integer, nullable=False)
     comp = db.relationship(Comp)
-    user_id = db.Column(db.Integer, db.ForeignKey('app_user.id'))
-    app_user = db.relationship(AppUser)
+    team_id = db.Column(db.Integer, nullable=False)
+    team = db.relationship(Team)
+    created_on = db.Column(db.DateTime(timezone=True), server_default=db.func.now(), nullable=False)
+    created_by = db.Column(db.Integer, db.ForeignKey('app_user.id'), nullable=False)
+    user1 = db.relationship(AppUser, foreign_keys='comp_reg.created_by', nullable=False)
+    updated_on = db.Column(db.DateTime)
+    updated_by = db.Column(db.Integer, db.ForeignKey('app_user.id'))
+    user2 = db.relationship(AppUser, foreign_keys='comp_reg.updated_by')
 
 
 class Referee(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     phone = db.Column(db.String(15), nullable=False)
+    created_on = db.Column(db.DateTime(timezone=True), server_default=db.func.now(), nullable=False)
+    created_by = db.Column(db.Integer, db.ForeignKey('app_user.id'), nullable=False)
+    user1 = db.relationship(AppUser, foreign_keys='referee.created_by', nullable=False)
+    updated_on = db.Column(db.DateTime)
+    updated_by = db.Column(db.Integer, db.ForeignKey('app_user.id'))
+    user2 = db.relationship(AppUser, foreign_keys='referee.updated_by', nullable=False)
 
 
 class NewsItem(db.Model):
@@ -75,10 +133,10 @@ class NewsItem(db.Model):
     message = db.Column(db.String(500), nullable=False)
     created_on = db.Column(db.DateTime(timezone=True), server_default=db.func.now(), nullable=False)
     created_by = db.Column(db.Integer, db.ForeignKey('app_user.id'), nullable=False)
-    user1 = db.relationship(AppUser, foreign_keys='NewsItem.created_by')
+    user1 = db.relationship(AppUser, foreign_keys='news_item.created_by', nullable=False)
     updated_on = db.Column(db.DateTime)
     updated_by = db.Column(db.Integer, db.ForeignKey('app_user.id'))
-    user2 = db.relationship(AppUser,  foreign_keys='NewsItem.updated_by')
+    user2 = db.relationship(AppUser, foreign_keys='news_item.updated_by')
 
 
 class FixtureRound(db.Model):
@@ -90,8 +148,10 @@ class FixtureRound(db.Model):
     comp = db.relationship(Comp)
     created_on = db.Column(db.DateTime(timezone=True), server_default=db.func.now(), nullable=False)
     created_by = db.Column(db.Integer, db.ForeignKey('app_user.id'), nullable=False)
+    user1 = db.relationship(AppUser, foreign_keys='fixture_round.created_by', nullable=False)
     updated_on = db.Column(db.DateTime)
     updated_by = db.Column(db.Integer, db.ForeignKey('app_user.id'))
+    user2 = db.relationship(AppUser, foreign_keys='fixture_round.updated_by')
 
 
 class Match(db.Model):
@@ -111,7 +171,7 @@ class Match(db.Model):
     referee = db.relationship(Referee)
     created_on = db.Column(db.DateTime(timezone=True), server_default=db.func.now(), nullable=False)
     created_by = db.Column(db.Integer, db.ForeignKey('app_user.id'), nullable=False)
-    user1 = db.relationship(AppUser, foreign_keys='Match.created_by')
+    user1 = db.relationship(AppUser, foreign_keys='Match.created_by', nullable=False)
     updated_on = db.Column(db.DateTime)
     updated_by = db.Column(db.Integer, db.ForeignKey('app_user.id'))
     user2 = db.relationship(AppUser, foreign_keys='Match.updated_by')
