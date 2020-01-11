@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
-from leagueAdmin.models import Comp, NewsItem, Team, AppUser, Day, Section, Season, Referee, Home, Surface
+from leagueAdmin.models import AppUser, Comp, NewsItem, Team, Day, Section, Season, Referee, Home, Surface, CompReg
 
 Base = declarative_base()
 engine = create_engine('postgresql://colm:colm@localhost/league')
@@ -19,22 +19,6 @@ DBSession = sessionmaker(bind=engine)
 # revert all of them back to the last commit by calling
 # session.rollback()
 session = DBSession()
-
-season1 = Season(name='2020', start='2020-04-01', end='2020-11-30')
-session.add(season1)
-session.commit()
-
-sec1 = Section(name='North')
-session.add(sec1)
-session.commit()
-
-ref1 = Referee(name='John Murphy', phone='087 1111111')
-session.add(ref1)
-ref2 = Referee(name='Eddie Murphy', phone='087 2222222')
-session.add(ref2)
-ref3= Referee(name='Tommy Murphy', phone='087 3333333')
-session.add(ref3)
-session.commit()
 
 user1 = AppUser(name='Colm Faherty', email='myemail@gmail.com', picture='colm.png')
 session.add(user1)
@@ -53,7 +37,23 @@ user4 = AppUser(name='Alex Faherty', email='oreolover@address.ie', picture='lexx
 session.add(user4)
 session.commit()
 
-sec1 = Section(name='North')
+season1 = Season(name='2020', start='2020-04-01', end='2020-11-30', user1=user1)
+session.add(season1)
+session.commit()
+
+sec1 = Section(name='North', user1=1)
+session.add(sec1)
+session.commit()
+
+ref1 = Referee(name='John Murphy', phone='087 1111111', user1=1)
+session.add(ref1)
+ref2 = Referee(name='Eddie Murphy', phone='087 2222222', user1=1)
+session.add(ref2)
+ref3 = Referee(name='Tommy Murphy', phone='087 3333333', user1=1)
+session.add(ref3)
+session.commit()
+
+sec1 = Section(name='North', user1=1)
 session.add(sec1)
 session.commit()
 
@@ -74,62 +74,70 @@ session.add(day7)
 session.commit()
 
 # teams for Premier League North
-division1 = Comp(name="Premier Division North", rank=1, day=day6, section=sec1)
+division1 = Comp(name="Premier Division North", rank=1, day=day6, section=sec1, user1=1)
 
 session.add(division1)
 session.commit()
 
-division2 = Comp(name="Division 1 North", rank=2, day=day6, section=sec1)
+division2 = Comp(name="Division 1 North", rank=2, day=day6, section=sec1, user1=1)
 
 session.add(division2)
 session.commit()
 
-division3 = Comp(name="Division 2 North", rank=3, day=day6, section=sec1)
+division3 = Comp(name="Division 2 North", rank=3, day=day6, section=sec1, user1=1)
 
 session.add(division1)
 session.commit()
 
-division4 = Comp(name="Division 3 North", rank=4, day=day6, section=sec1)
+division4 = Comp(name="Division 3 North", rank=4, day=day6, section=sec1, user1=1)
 
 session.add(division1)
 session.commit()
 
-surf1 = Surface(name='Grass')
-surf2 = Surface(name='Astro Turf')
+surf1 = Surface(name='Grass', user1=1)
+surf2 = Surface(name='Astro Turf', user1=1)
 session.add(surf1)
 session.add(surf2)
 session.commit()
 
-home1 = Home(name='Beaumont Convent', address='Dublin 9', surface=surf1)
+home1 = Home(name='Beaumont Convent', address='Dublin 9', surface=surf1, user1=1)
 session.add(home1)
-home2 = Home(name='Fr. Collins Park', address='Donaghmede', surface=surf1)
+home2 = Home(name='Fr. Collins Park', address='Donaghmede', surface=surf1, user1=1)
 session.add(home2)
-home3 = Home(name='Athletic Park', address='Swords', surface=surf1)
+home3 = Home(name='Athletic Park', address='Swords', surface=surf1, user1=1)
 session.add(home3)
-home4 = Home(name='St Annes Park', address='Raheny', surface=surf1)
+home4 = Home(name='St Annes Park', address='Raheny', surface=surf1, user1=1)
 session.add(home4)
 session.commit()
 
 
-team1 = Team(name="Celtic Park FC", email='colm29@gmail.com', home=home1, comp=division3, app_user=user1)
+team1 = Team(name="Celtic Park FC", email='colm29@gmail.com', home=home1, user1=1)
 
 session.add(team1)
 session.commit()
 
 
-team1 = Team(name="Trinity Donaghmede B", email='trindon@anymail.com', home=home2, comp=division3, app_user=user2)
+team2 = Team(name="Trinity Donaghmede B", email='trindon@anymail.com', home=home2, user1=2)
 
-session.add(team1)
+session.add(team2)
 session.commit()
 
-team1 = Team(name="Swords Celtic 35s", email='sc@swordsvillage.ie', home=home3, comp=division3, app_user=user2)
+team3 = Team(name="Swords Celtic 35s", email='sc@swordsvillage.ie', home=home3, user1=2)
 
-session.add(team1)
+session.add(team3)
 session.commit()
 
-team1 = Team(name="Marino Athletic",  email='mafc@amailserver.com', home=home4, comp=division3, app_user=user2)
+team4 = Team(name="Marino Athletic",  email='mafc@amailserver.com', home=home4, user1=2)
 
-session.add(team1)
+session.add(team4)
+session.commit()
+
+comp_reg1 = CompReg(team=team1, comp=division3, user1=1)
+comp_reg2 = CompReg(team=team2, comp=division3, user1=1)
+comp_reg3 = CompReg(team=team3, comp=division3, user1=1)
+comp_reg4 = CompReg(team=team4, comp=division3, user1=1)
+
+session.add(comp_reg1, comp_reg2, comp_reg3, comp_reg4)
 session.commit()
 
 news1 = NewsItem(title='Season Kickoff', message='The new 2020 season will kick off in late March  Watch this space.',
@@ -137,8 +145,10 @@ news1 = NewsItem(title='Season Kickoff', message='The new 2020 season will kick 
 news2 = NewsItem(title='Keeper Wanted', message='celtic Park are looking for a goalkeeper.  Contact their manager if '
                                                 'interested.',
                  created_by=1)
-session.add(news1)
-session.add(news2)
+news3 = NewsItem(title='Friendly Wanted', message='Real Transylvania are looking for an away friendly as their ground '
+                                                  'is being renovated.  Contact Johnno on 087 67802732.',
+                 created_by=1)
+session.add(news1, news2, news3)
 session.commit()
 
 print("added teams!")
