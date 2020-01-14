@@ -128,7 +128,7 @@ def delete_team(comp_name, team_name):
 @app.route('/login')
 def show_login():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
-                    for x in range(32))
+                    for _ in range(32))
     login_session['state'] = state
     return render_template('login.html', STATE=state, fbclient_id=config.FB_ID)
 

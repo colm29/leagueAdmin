@@ -115,8 +115,8 @@ class CompReg(db.Model):
     updated_on = db.Column(db.DateTime)
     updated_by = db.Column(db.Integer, db.ForeignKey('app_user.id'))
 
-    comp = db.relationship(Comp)
-    team = db.relationship(Team)
+    comp = db.relationship(Comp, backref='comp_reg', lazy=True)
+    team = db.relationship(Team, backref='comp_reg', lazy=True)
     user1 = db.relationship(AppUser, foreign_keys=created_by)
     user2 = db.relationship(AppUser, foreign_keys=updated_by)
 
