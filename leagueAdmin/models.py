@@ -60,6 +60,7 @@ class Comp(db.Model):
     day = db.relationship(Day)
     user1 = db.relationship(AppUser, foreign_keys=created_by)
     user2 = db.relationship(AppUser, foreign_keys=updated_by)
+    teams = db.relationship('Team', secondary='comp_reg')
 
 
 class Surface(db.Model):
@@ -104,12 +105,14 @@ class Team(db.Model):
     home = db.relationship(Home)
     user1 = db.relationship(AppUser, foreign_keys=created_by)
     user2 = db.relationship(AppUser, foreign_keys=updated_by)
+    comp = db.relationship(Comp, secondary='comp_reg')
 
 
 class CompReg(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     comp_id = db.Column(db.Integer, db.ForeignKey('comp.id'), nullable=False)
     team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=False)
+    active = db.Column(db.Boolean, default=True, nullable=False)
     created_on = db.Column(db.DateTime(timezone=True), server_default=db.func.now(), nullable=False)
     created_by = db.Column(db.Integer, db.ForeignKey('app_user.id'), nullable=False)
     updated_on = db.Column(db.DateTime)

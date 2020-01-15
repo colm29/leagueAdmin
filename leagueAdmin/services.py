@@ -1,6 +1,6 @@
 import random
 
-from .models import AppUser, FixtureRound, Team, Match, CompReg
+from .models import AppUser, FixtureRound, Comp, Match
 from .views import login_session
 from . import db
 
@@ -59,12 +59,8 @@ def create_fixture_round(date, comp_id):
     fixture_round = FixtureRound(date=date, season_id=1, comp_id=comp_id, created_by=1)
     db.session.add(fixture_round)
     db.session.flush()
-    teams_and_comps = (db.session.query(Team, CompReg)
-                       .filter(Team.id == CompReg.team_id)
-                       .filter(CompReg.comp_id == comp_id)
-                       .all())
-
-    teams = [teams_and_comps[0] for _ in teams_and_comps]
+    comp = db.session.query(Comp).filter_by(id=comp_id).one()
+    teams = comp.teams
 
     if len(teams) > 2:
         while len(teams) >= 2:
