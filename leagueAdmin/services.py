@@ -13,27 +13,19 @@ def is_logged_in():
 
 # AppUser functions
 def get_user_id(email):
-    try:
-        user = db.session.query(AppUser).filter_by(email=email).one()
-        return user.id
-    except Exception:
-        return None
+    user = db.session.query(AppUser).filter_by(email=email).one()
+    return user.id
 
 
 def get_user_info(user_id):
-    try:
-        user = db.session.query(AppUser).filter_by(id=user_id).one()
-        if user.picture != login_session['picture']:
-            user.picture = login_session['picture']
-        elif user.name != login_session['AppUsername']:
-            user.name = login_session['AppUsername']
-        db.session.add(AppUser)
-        db.session.commit()
-        return AppUser
-    except Exception:
-        return None
-    finally:
-        db.session.close()
+    user = db.session.query(AppUser).filter_by(id=user_id).one()
+    if user.picture != login_session['picture']:
+        user.picture = login_session['picture']
+    elif user.name != login_session['AppUsername']:
+        user.name = login_session['AppUsername']
+    db.session.add(AppUser)
+    db.session.commit()
+    return AppUser
 
 
 def update_user(user_id):
@@ -71,4 +63,3 @@ def create_fixture_round(date, comp_id):
             db.session.add(match)
         db.session.commit()
         return db.session.query(Match).filter_by(fixture_round_id=fixture_round.id).all()
-
