@@ -55,11 +55,12 @@ def create_fixture_round(date, comp_id):
     teams = comp.teams
 
     if len(teams) > 2:
+        random.shuffle(teams)
         while len(teams) >= 2:
-            team1 = teams.pop(random.choice(teams))
-            team2 = teams.pop(random.choice(teams))
+            team1 = teams.pop()
+            team2 = teams.pop()
             match = Match(fixture_round_id=fixture_round.id, home_team=team1.id, away_team=team2.id,
-                          home_id=team1.home_id, created_by=1)
+                          home_id=team1.home_id, referee_id=1, created_by=1)
             db.session.add(match)
         db.session.commit()
         return db.session.query(Match).filter_by(fixture_round_id=fixture_round.id).all()

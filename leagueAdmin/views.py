@@ -2,11 +2,12 @@ import requests
 import random
 import string
 import json
+from datetime import datetime
 
 from flask import render_template, url_for, flash, request, redirect,  make_response, session as login_session
 
-from leagueAdmin.models import Comp, Team, Home, NewsItem
-from .services import is_logged_in, create_user, update_user, get_user_id
+from leagueAdmin.models import Comp, Team, NewsItem
+from .services import is_logged_in, create_user, update_user, get_user_id, create_fixture_round
 from leagueAdmin import app, db
 from . import config
 
@@ -23,25 +24,21 @@ def show_divisions_and_news():
 @app.route('/comp/<path:comp_name>/teams')
 def show_teams(comp_name):
     comp = db.session.query(Comp).filter_by(name=comp_name).one()
-    teams = db.session.query(Team).filter_by(comp_id=comp.id)
+    teams = comp.teams
     comps = db.session.query(Comp).order_by(Comp.rank).all()
     if is_logged_in():  # can create a new team if logged in
-        return render_template('teams.html', teams=teams,
-                               comp=comp, comps=comps)
+        return render_template('teams.html', teams=teams, comp=comp, comps=comps)
     else:
-        return render_template('publicTeams.html', teams=teams,
-                               comp=comp, comps=comps)
+        return render_template('publicTeams.html', teams=teams, comp=comp, comps=comps)
 
 
 @app.route('/comp/<path:comp_name>/teams/<path:team_name>/teamDetails')
 def show_team_details(comp_name, team_name):
     team = db.session.query(Team).filter_by(name=team_name).one()
-    home = db.session.query(Home).filter_by(id=team.home_id).one()
-    if login_session.get('user_id') == team.user_id:
-        return render_template('teamDetails.html',
-                               team=team, comp_name=comp_name, home=home)
-    return render_template('publicTeamDetails.html',
-                           team=team, comp_name=comp_name, home=home)
+    home = team.home
+    if login_session.get('user_id') == team.created_by:
+        return render_template('teamDetails.html', team=team, comp_name=comp_name, home=home)
+    return render_template('publicTeamDetails.html', team=team, comp_name=comp_name, home=home)
 
 
 @app.route('/comp/<path:comp_name>/teams/new', methods=['GET', 'POST'])
@@ -51,18 +48,13 @@ def new_team(comp_name):
                 'Please log in to create a new team.";}</script><body onload="myFunction()">')
     if request.method == 'POST':
         team = Team(name=request.form['name'],
-                    nickname=request.form['nickname'],
-                    membership=request.form['membership'],
                     email=request.form['email'],
                     home=request.form['home'],
-                    description=request.form['description'],
-                    comp_id=request.form['comp'],
-                    user_id=login_session['user_id'])
+                    created_by=login_session['user_id'])
         db.session.add(team)
         db.session.commit()
         flash('New Team Added!')
-        comp = db.session.query(Comp) \
-            .filter_by(id=request.form['comp']).one()
+        comp = db.session.query(Comp).filter_by(id=request.form['comp']).one()
         return redirect(url_for('showTeams', comp_name=comp.name))
     else:
         comps = db.session.query(Comp).order_by(Comp.rank).all()
@@ -74,28 +66,22 @@ def new_team(comp_name):
 @app.route('/comp/<path:comp_name>/teams/<path:team_name>/edit',
            methods=['POST', 'GET'])
 def edit_team(comp_name, team_name):
-    comp = db.session.query(Comp).filter_by(name=comp_name).one()
     comps = db.session.query(Comp).order_by(Comp.rank).all()
+    comp = comps.filter(name=comp_name)
     team = db.session.query(Team).filter_by(name=team_name).one()
-    if team.user_id != login_session['user_id']:
+    if team.created_by != login_session['user_id']:
         # in case of access by URL
         return ('<script>function myFunction() {alert("ou are not authorised to edit this team.  Please create your own'
                 ' team in order to edit.");}</script><body onload="myFunction()">')
     if request.method == 'POST':
         if request.form['name']:
             team.name = request.form['name']
-        if request.form['nickname']:
-            team.nickname = request.form['nickname']
-        if request.form['membership']:
-            team.membership = request.form['membership']
         if request.form['email']:
             team.email = request.form['email']
         if request.form['home']:
             team.home = request.form['home']
-        if request.form['description']:
-            team.description = request.form['description']
         if request.form['comp']:
-            team.comp_id = request.form['comp']
+            team.comp = request.form['comp']
         db.session.add(team)
         db.session.commit()
         flash('Team Updated!')
@@ -107,15 +93,15 @@ def edit_team(comp_name, team_name):
 
 # Function to delete team - only available to user who created team
 @app.route('/comp/<path:comp_name>/teams/<path:team_name>/delete',
-           methods=['POST', 'GET'])
+           methods=['DELETE', 'GET'])
 def delete_team(comp_name, team_name):
     comp = db.session.query(Comp).filter_by(name=comp_name).one()
     team = db.session.query(Team).filter_by(name=team_name).one()
-    if team.user_id != login_session['user_id']:
+    if team.created_by != login_session['user_id']:
         # in case of access by URL
         return ('<script>function myFunction() {alert("You are not authorised to delete this team.  Please create your '
                 'own team in order to delete.");}</script><body onload="myFunction()">')
-    if request.method == 'POST':
+    if request.method == 'DELETE':
         db.session.delete(team)
         db.session.commit()
         flash('Team Deleted!')
@@ -239,3 +225,15 @@ def disconnect():
     else:
         flash("You were not logged in")
         return redirect(url_for('showDivisions'))
+
+
+@app.route('/admin', methods=['GET', 'POST'])
+def show_admin():
+    if request.method == 'POST':
+        comp_id = request.form.get('comp_id')
+        if comp_id:
+            dt = datetime.strptime(request.form['match_date'], '%Y-%m-%d')
+            create_fixture_round(dt, comp_id)
+            return "Done"
+    else:
+        return render_template('admin.html')
