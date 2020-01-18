@@ -39,25 +39,19 @@ class Section(db.Model):
     user2 = db.relationship(AppUser, foreign_keys=updated_by)
 
 
-class Day(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(20), nullable=False)
-
-
 class Comp(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
     rank = db.Column(db.Integer, nullable=False)
     section_id = db.Column(db.Integer, db.ForeignKey('section.id'), nullable=False)
     cup = db.Column(db.Boolean, default=0, nullable=False)
-    day_id = db.Column(db.Integer, db.ForeignKey('day.id'))
+    day_id = db.Column(db.Integer)
     created_on = db.Column(db.DateTime(timezone=True), server_default=db.func.now(), nullable=False)
     created_by = db.Column(db.Integer, db.ForeignKey('app_user.id'), nullable=False)
     updated_on = db.Column(db.DateTime)
     updated_by = db.Column(db.Integer, db.ForeignKey('app_user.id'))
 
     section = db.relationship(Section)
-    day = db.relationship(Day)
     user1 = db.relationship(AppUser, foreign_keys=created_by)
     user2 = db.relationship(AppUser, foreign_keys=updated_by)
     teams = db.relationship('Team', secondary='comp_reg')

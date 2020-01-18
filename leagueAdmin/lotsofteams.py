@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
-from leagueAdmin.models import AppUser, Comp, NewsItem, Team, Day, Section, Season, Referee, Home, Surface, CompReg
+from leagueAdmin.models import AppUser, Comp, NewsItem, Team, Section, Season, Referee, Home, Surface, CompReg
 
 Base = declarative_base()
 engine = create_engine('postgresql://colm:colm@localhost/league')
@@ -46,27 +46,11 @@ sec1 = Section(name='North', user1=user1)
 session.add(sec1)
 session.commit()
 
-day1 = Day(name='Monday')
-session.add(day1)
-day2 = Day(name='Tuesday')
-session.add(day2)
-day3 = Day(name='Wednesday')
-session.add(day3)
-day4 = Day(name='Thursday')
-session.add(day4)
-day5 = Day(name='Friday')
-session.add(day5)
-day6 = Day(name='Saturday')
-session.add(day6)
-day7 = Day(name='Sunday')
-session.add(day7)
-session.commit()
-
 # teams for Premier League North
-division1 = Comp(name="Premier Division North", rank=1, day=day6, section=sec1, user1=user1)
-division2 = Comp(name="Division 1 North", rank=2, day=day6, section=sec1, user1=user1)
-division3 = Comp(name="Division 2 North", rank=3, day=day6, section=sec1, user1=user1)
-division4 = Comp(name="Division 3 North", rank=4, day=day6, section=sec1, user1=user1)
+division1 = Comp(name="Premier Division North", rank=1, day_id=6, section=sec1, user1=user1)
+division2 = Comp(name="Division 1 North", rank=2, day_id=6, section=sec1, user1=user1)
+division3 = Comp(name="Division 2 North", rank=3, day_id=6, section=sec1, user1=user1)
+division4 = Comp(name="Division 3 North", rank=4, day_id=6, section=sec1, user1=user1)
 
 session.add_all([division1, division2, division3, division4])
 session.commit()
