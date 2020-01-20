@@ -2,7 +2,7 @@
 {% block main %}
 <div class="card-header bg-transparent"><strong>Add News Item</strong></div>
 <div class="card-body pb-3">
-  <form action={{url_for("new_news_item")}} method="post">
+  <form action={{url_for("add_news_item")}} method="post">
     <div class="form-row">
       <div class="form-group col-6">
         <label class="lead" for="title">Title</label>
@@ -12,7 +12,7 @@
     <div class="form-row">
       <div class="form-group col-3">
         <label class="lead" for="message">Message</label>
-        <input type="email" class="form-control" name="message">
+        <textarea class="form-control" name="message"></textarea>
       </div>
     </div>
     <div class="form-row">
@@ -23,6 +23,12 @@
         <a class="btn btn-primary" role="button" href={{url_for('show_admin')}}>Cancel</a>
       </div>
     </div>
+      <h5 class="card-title">News</h5>
+      <div class="list-group list-group-flush">
+        {% for n in news %}
+        <p class="list-group-item list-group-item-action">{{n.message}}</p>
+        {% endfor %}
+      </div>
   </form>
 </div>
 {% endblock %}

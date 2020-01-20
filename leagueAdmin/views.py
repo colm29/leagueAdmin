@@ -29,7 +29,7 @@ def show_teams(comp_name):
     if is_logged_in():  # can create a new team if logged in
         return render_template('teams.html', teams=teams, comp=comp, comps=comps)
     else:
-        return render_template('publicTeams.html', teams=teams, comp=comp, comps=comps)
+        return render_template('public_teams.html', teams=teams, comp=comp, comps=comps)
 
 
 @app.route('/comp/<path:comp_name>/teams/<path:team_name>/teamDetails')
@@ -37,12 +37,12 @@ def show_team_details(comp_name, team_name):
     team = db.session.query(Team).filter_by(name=team_name).one()
     home = team.home
     if login_session.get('user_id') == team.created_by:
-        return render_template('teamDetails.html', team=team, comp_name=comp_name, home=home)
-    return render_template('publicTeamDetails.html', team=team, comp_name=comp_name, home=home)
+        return render_template('team_details.html', team=team, comp_name=comp_name, home=home)
+    return render_template('public_team_details.html', team=team, comp_name=comp_name, home=home)
 
 
-@app.route('/comp/<path:comp_name>/teams/new', methods=['GET', 'POST'])
-def new_team(comp_name):
+@app.route('/comp/<path:comp_name>/teams/add_team', methods=['GET', 'POST'])
+def add_team(comp_name):
     if not is_logged_in():
         return ('<script>function myFunction() {alert("You are not authorised to create a new team.  '
                 'Please log in to create a new team.";}</script><body onload="myFunction()">')
@@ -58,7 +58,7 @@ def new_team(comp_name):
         return redirect(url_for('showTeams', comp_name=comp.name))
     else:
         comps = db.session.query(Comp).order_by(Comp.rank).all()
-        return render_template('newTeam.html',
+        return render_template('add_team.html',
                                comp_name=comp_name,
                                comps=comps)
 
@@ -87,7 +87,7 @@ def edit_team(comp_name, team_name):
         flash('Team Updated!')
         return redirect(url_for('showTeams', comp_name=comp_name))
     else:
-        return render_template('editTeam.html', comp=comp,
+        return render_template('edit_team.html', comp=comp,
                                comps=comps, team=team)
 
 
@@ -107,7 +107,7 @@ def delete_team(comp_name, team_name):
         flash('Team Deleted!')
         return redirect(url_for('showTeams', comp_name=comp_name))
     else:
-        return render_template('deleteTeam.html',
+        return render_template('delete_team.html',
                                comp=comp, team=team)
 
 
@@ -237,3 +237,16 @@ def show_admin():
             return "Done"
     else:
         return render_template('admin.html')
+
+
+@app.route('/add_news_item', methods=['GET', 'POST'])
+def add_news_item():
+    if request.method == 'POST':
+        news_item = NewsItem(title=request.form['title'],
+                             message=request.form['message'],
+                             created_by=3)
+        db.session.add(news_item)
+        db.session.commit()
+
+    news = db.session.query(NewsItem).all()
+    return render_template('add_news_item.html', news=news)
