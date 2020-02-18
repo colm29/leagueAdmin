@@ -62,9 +62,8 @@ def add_team(comp_name):
                                comp_name=comp_name,
                                comps=comps)
 
-# Function to edit team - only available to user who created team
-@app.route('/comp/<path:comp_name>/teams/<path:team_name>/edit',
-           methods=['POST', 'GET'])
+
+@app.route('/comp/<path:comp_name>/teams/<path:team_name>/edit', methods=['POST', 'GET'])
 def edit_team(comp_name, team_name):
     comps = db.session.query(Comp).order_by(Comp.rank).all()
     comp = comps.filter(name=comp_name)
@@ -91,9 +90,7 @@ def edit_team(comp_name, team_name):
                                comps=comps, team=team)
 
 
-# Function to delete team - only available to user who created team
-@app.route('/comp/<path:comp_name>/teams/<path:team_name>/delete',
-           methods=['DELETE', 'GET'])
+@app.route('/comp/<path:comp_name>/teams/<path:team_name>/delete', methods=['DELETE', 'GET'])
 def delete_team(comp_name, team_name):
     comp = db.session.query(Comp).filter_by(name=comp_name).one()
     team = db.session.query(Team).filter_by(name=team_name).one()
@@ -242,11 +239,13 @@ def show_admin():
 @app.route('/add_news_item', methods=['GET', 'POST'])
 def add_news_item():
     if request.method == 'POST':
-        news_item = NewsItem(title=request.form['title'],
-                             message=request.form['message'],
-                             created_by=3)
+        news_item = NewsItem(
+            title=request.form['title'],
+            message=request.form['message'],
+            created_by=3)
         db.session.add(news_item)
         db.session.commit()
 
     news = db.session.query(NewsItem).all()
     return render_template('add_news_item.html', news=news)
+
