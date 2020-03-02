@@ -6,7 +6,7 @@ from datetime import datetime
 
 from flask import render_template, url_for, flash, request, redirect,  make_response, session as login_session
 
-from leagueAdmin.models import Comp, Team, NewsItem
+from leagueAdmin.models import Comp, Team, NewsItem, Match, FixtureRound, Home
 from .services import is_logged_in, create_user, update_user, get_user_id, create_fixture_round
 from leagueAdmin import app, db
 from . import config
@@ -252,11 +252,21 @@ def add_news_item():
 
 @app.route('/fixtures', methods=['GET', 'POST'])
 def create_fixtures():
+    comps = db.session.query(Comp).all()
     if request.method == 'POST':
         comp = request.form['comp']
         create_fixture_round(request.form['date'], comp)
-        return render_template('fixtures.html', comp=comp)
-    else:
-        comps = db.session.query(Comp).all()
         return render_template('fixtures.html', comps=comps)
+    return render_template('fixtures.html', comps=comps)
+
+
+@app.route('/results', methods=['GET', 'POST'])
+def create_results():
+    matches = db.session.query(Match, Team, FixtureRound, Comp).filter(Match.home_score is None)
+    if request.method == 'POST':
+        comp = request.form['comp']
+        create_fixture_round(request.form['date'], comp)
+        return render_template('results.html', matches=matches)
+    return render_template('results.html', matches=matches)
+
 
