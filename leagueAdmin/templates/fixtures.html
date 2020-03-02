@@ -13,8 +13,8 @@
       <div class="form-group col-4">
         <label class="lead" for="comp">Division</label>
         <select name="comp" class="form-control">
-          {% for d in comps %}
-          <option value={{d.id}} {% if team.comp_id == d.id %} selected {% endif %}>{{d.name}}</option>
+          {% for c in comps %}
+          <option value={{c.id}}>{{c.name}}</option>
           {% endfor %}
         </select>
       </div>

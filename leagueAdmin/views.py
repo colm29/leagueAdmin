@@ -249,3 +249,14 @@ def add_news_item():
     news = db.session.query(NewsItem).all()
     return render_template('add_news_item.html', news=news)
 
+
+@app.route('/fixtures', methods=['GET', 'POST'])
+def create_fixtures():
+    if request.method == 'POST':
+        comp = request.form['comp']
+        create_fixture_round(request.form['date'], comp)
+        return render_template('fixtures.html', comp=comp)
+    else:
+        comps = db.session.query(Comp).all()
+        return render_template('fixtures.html', comps=comps)
+
