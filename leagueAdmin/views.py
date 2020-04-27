@@ -5,6 +5,7 @@ import json
 from datetime import datetime
 
 from flask import render_template, url_for, flash, request, redirect,  make_response, session as login_session
+from sqlalchemy.orm import aliased, joinedload
 
 from leagueAdmin.models import Comp, Team, NewsItem, Match, FixtureRound, Home
 from .services import is_logged_in, create_user, update_user, get_user_id, create_fixture_round
@@ -262,7 +263,17 @@ def create_fixtures():
 
 @app.route('/results', methods=['GET', 'POST'])
 def create_results():
-    matches = db.session.query(Match, Team, FixtureRound, Comp).filter(Match.home_score is None)
+    home_team_alias = aliased(Team)
+    away_team_alias = aliased(Team)
+    matches = (db.session.query(Match)
+               .join(home_team_alias, Match.home_team == home_team_alias.id)
+               .join(away_team_alias, Match.away_team == away_team_alias.id)
+               .join(FixtureRound)
+               .join(Comp)
+               .options(joinedload(Match.team1))
+               .options(joinedload(Match.team2))
+               .all()
+               )
     if request.method == 'POST':
         comp = request.form['comp']
         create_fixture_round(request.form['date'], comp)
