@@ -95,5 +95,6 @@ news3 = NewsItem(title='Friendly Wanted', message='Real Transylvania are looking
                  created_by=1)
 session.add_all([news1, news2, news3])
 session.commit()
-
+# insert into comp_reg(comp_id, team_id, created_by) select 3, id, 1 from team;
 print("added teams!")
+

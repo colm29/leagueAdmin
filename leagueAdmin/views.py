@@ -7,7 +7,7 @@ from datetime import datetime
 from flask import render_template, url_for, flash, request, redirect,  make_response, session as login_session
 from sqlalchemy.orm import aliased, joinedload
 
-from leagueAdmin.models import Comp, Team, NewsItem, Match, FixtureRound, Home
+from leagueAdmin.models import Comp, Team, NewsItem, Match, FixtureRound
 from .services import is_logged_in, create_user, update_user, get_user_id, create_fixture_round
 from leagueAdmin import app, db
 from . import config
@@ -262,7 +262,7 @@ def create_fixtures():
 
 
 @app.route('/results', methods=['GET', 'POST'])
-def create_results():
+def enter_results():
     home_team_alias = aliased(Team)
     away_team_alias = aliased(Team)
     matches = (db.session.query(Match)

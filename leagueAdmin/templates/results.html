@@ -2,7 +2,7 @@
 {% block main %}
 <div class="card-header bg-transparent"><strong>Enter Results</strong></div>
 <div class="card-body pb-3">
-  <form action={{url_for("create_results")}} method="post">
+  <form action={{url_for("enter_results")}} method="post">
     {% for m in matches %}
 
       <div class="form-group">
