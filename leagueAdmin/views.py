@@ -10,7 +10,7 @@ from sqlalchemy.orm import aliased, joinedload
 from leagueAdmin.models import Comp, Team, NewsItem, Match, FixtureRound
 from .services import is_logged_in, create_user, update_user, get_user_id, create_fixture_round
 from leagueAdmin import app, db
-from . import config
+from leagueAdmin import config
 
 
 @app.route('/')
@@ -272,12 +272,15 @@ def enter_results():
                .join(Comp)
                .options(joinedload(Match.team1))
                .options(joinedload(Match.team2))
+               .filter(Match.home_score.is_(None))
+               .order_by(Match.datetime_override or FixtureRound.date)
                .all()
                )
+    dates = {match.fixture_round.date or match.datetime_override for match in matches}
     if request.method == 'POST':
         comp = request.form['comp']
         create_fixture_round(request.form['date'], comp)
         return render_template('results.html', matches=matches)
-    return render_template('results.html', matches=matches)
+    return render_template('results.html', matches=matches, dates=dates)
 
 
