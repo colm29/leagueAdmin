@@ -270,13 +270,16 @@ def enter_results():
                .join(away_team_alias, Match.away_team == away_team_alias.id)
                .join(FixtureRound)
                .join(Comp)
+               .options(joinedload(Match.fixture_round))
                .options(joinedload(Match.team1))
                .options(joinedload(Match.team2))
                .filter(Match.home_score.is_(None))
                .order_by(Match.datetime_override or FixtureRound.date)
                .all()
                )
-    dates = {match.fixture_round.date or match.datetime_override for match in matches}
+    dates = {match.datetime_override or match.fixture_round.date for match in matches}
+    for match in matches:
+        dt = match.Match.datetime_override or match.FixtureRound.date
     if request.method == 'POST':
         comp = request.form['comp']
         create_fixture_round(request.form['date'], comp)
