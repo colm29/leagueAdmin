@@ -10,7 +10,7 @@ from flask import render_template, url_for, flash, request, redirect,  make_resp
 from sqlalchemy.orm import aliased, joinedload
 
 from leagueAdmin.models import Comp, Team, NewsItem, Match, FixtureRound
-from .services import is_logged_in, create_user, update_user, get_user_id, create_fixture_round
+from .services import is_logged_in, create_user, update_user, get_user_id, create_fixture_round, save_results
 from leagueAdmin import app, db
 from leagueAdmin import config
 
@@ -280,13 +280,13 @@ def enter_results():
                .all()
                )
     dates = [(match.datetime_override or match.fixture_round.date, match) for match in matches]
-    dates = sorted(dates)
+    dates = sorted(dates, key=lambda x: x[0])
     match_days = defaultdict(list)
     for date, match in dates:
         match_days[date].append(match)
 
     if request.method == 'POST':
-        comp = request.form['comp']
-        create_fixture_round(request.form['date'], comp)
-        return render_template('results.html', matches=matches)
+        if request.form:
+            save_results(request.form)
+        return render_template('results.html', mmatch_days=match_days)
     return render_template('results.html', match_days=match_days)

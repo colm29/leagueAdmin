@@ -8,16 +8,16 @@
           <div class="form-row">
             <p>{{match_day.strftime("%d %B %Y, %H:%M")}}</p>
           </div>
-          {% for m in matches %}
+          {% for m in match_days[match_day] %}
           <div class="form-row">
             <div class="form-group col-sm-3">
               <label class="lead" for="homescore">{{m.team1.name}}</label>
             </div>
             <div class="form-group col-sm-3">
-              <input type="text" class="form-control" name="homescore{{m.id}}">
+              <input type="text" class="form-control" name="h{{m.id}}">
             </div>
             <div class="form-group col-sm-3">
-              <input type="text" class="form-control" name="awayscore{{m.id}}">
+              <input type="text" class="form-control" name="a{{m.id}}">
             </div>
             <div class="form-group col-sm-3">
               <label class="lead" for="awayscore">{{m.team2.name}}</label>

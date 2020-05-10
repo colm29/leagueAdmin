@@ -64,3 +64,15 @@ def create_fixture_round(date, comp_id):
             db.session.add(match)
         db.session.commit()
         return db.session.query(Match).filter_by(fixture_round_id=fixture_round.id).all()
+
+
+def save_results(results):
+    for result in results:
+        if result[:1] == 'h':
+            match_id = result[1:]
+            home_score = results[result]
+            away_score = results['a'+match_id]
+            match = db.session.query(Match).filter_by(id=int(match_id)).one()
+            match.home_score = home_score
+            match.away_score = away_score
+            db.session.commit()
