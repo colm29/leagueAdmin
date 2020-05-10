@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 import requests
 import random
 import string
@@ -277,13 +279,14 @@ def enter_results():
                .order_by(Match.datetime_override or FixtureRound.date)
                .all()
                )
-    dates = {match.datetime_override or match.fixture_round.date for match in matches}
-    for match in matches:
-        dt = match.Match.datetime_override or match.FixtureRound.date
+    dates = [(match.datetime_override or match.fixture_round.date, match) for match in matches]
+    dates = sorted(dates)
+    match_days = defaultdict(list)
+    for date, match in dates:
+        match_days[date].append(match)
+
     if request.method == 'POST':
         comp = request.form['comp']
         create_fixture_round(request.form['date'], comp)
         return render_template('results.html', matches=matches)
-    return render_template('results.html', matches=matches, dates=dates)
-
-
+    return render_template('results.html', match_days=match_days)

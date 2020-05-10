@@ -3,9 +3,12 @@
 <div class="card-header bg-transparent"><strong>Enter Results</strong></div>
 <div class="card-body pb-3">
   <form action={{url_for("enter_results")}} method="post">
-    {% for m in matches %}
-
       <div class="form-group">
+          {% for match_day in match_days %}
+          <div class="form-row">
+            <p>{{match_day.strftime("%d %B %Y, %H:%M")}}</p>
+          </div>
+          {% for m in matches %}
           <div class="form-row">
             <div class="form-group col-sm-3">
               <label class="lead" for="homescore">{{m.team1.name}}</label>
@@ -20,8 +23,9 @@
               <label class="lead" for="awayscore">{{m.team2.name}}</label>
             </div>
           </div>
+          {% endfor %}
+        {% endfor %}
       </div>
-    {% endfor %}
       <div class="form-row">
         <div class="form-group-col-1">
           <button type="submit" class="btn btn-primary">Submit</button>
