@@ -9,7 +9,7 @@ from datetime import datetime
 from flask import render_template, url_for, flash, request, redirect,  make_response, session as login_session
 from sqlalchemy.orm import aliased, joinedload
 
-from leagueAdmin.models import Comp, Team, NewsItem, Match, FixtureRound
+from leagueAdmin.models import Comp, Team, NewsItem, Match, FixtureRound, Referee
 from .services import is_logged_in, create_user, update_user, get_user_id, create_fixture_round, save_results
 from leagueAdmin import app, db
 from leagueAdmin import config
@@ -33,6 +33,12 @@ def show_teams(comp_name):
         return render_template('teams.html', teams=teams, comp=comp, comps=comps)
     else:
         return render_template('public_teams.html', teams=teams, comp=comp, comps=comps)
+
+
+@app.route('/referees')
+def show_referees():
+    referees = db.session.query(Referee).all()
+    return render_template('referees.html', referees=referees)
 
 
 @app.route('/comp/<path:comp_name>/teams/<path:team_name>/teamDetails')
@@ -109,7 +115,6 @@ def delete_team(comp_name, team_name):
     else:
         return render_template('delete_team.html',
                                comp=comp, team=team)
-
 
 @app.route('/login')
 def show_login():
