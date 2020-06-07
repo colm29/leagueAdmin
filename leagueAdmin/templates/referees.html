@@ -5,27 +5,26 @@
   <div class="row">
     <div class="col-4 offset-1">
       <h5 class="card-title">Referees</h5>
-      <div class="list-group list-group-flush">
-        {% for r in referees %}
-        <a href={{url_for("show_teams", comp_name = d.name)}} class="list-group-item list-group-item-action">{{d.name}}</a>
-        {% endfor %}
-      </div>
-      </div>
-      <div class="col-4">
-        <h5 class="card-title">{{comp.name}} Teams</h5>
-        <div class="list-group list-group-flush">
-          {% for t in teams %}
-          <a href={{url_for('show_team_details', comp_name = comp.name, team_name = t.name)}} class="list-group-item list-group-item-action">{{t.name}}</a>
-          {% endfor %}
-        </div>
-      </div>
-      {% block newButton %}
-        <div class="col">
-        <a href={{url_for('new_team', comp_name  = comp.name)}} class="btn btn-success" role="button">Create New Team</a>
-        </div>
-      {% endblock %}
     </div>
-
+  </div>
+  <div class="row">
+    <div class="col-4 offset-1">
+    <div class="list-group list-group-flush">
+      {% for r in referees %}
+        <p class="list-group-item list-group-item-action">{{r.name}}</p>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="col-4">
+    <div class="list-group list-group-flush">
+      {% for r in referees %}
+        <p class="list-group-item list-group-item-action">{{r.phone}}</p>
+      {% endfor %}
+    </div>
   </div>
   </div>
+  <div class="col">
+    <a href={{url_for('show_divisions_and_news')}} class="btn btn-primary" role="button">Back</a>
+  </div>
+</div>
 {% endblock %}
