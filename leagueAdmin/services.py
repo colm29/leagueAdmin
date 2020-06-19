@@ -1,6 +1,10 @@
 import random
 
-from .models import AppUser, FixtureRound, Comp, Match
+import typing
+
+from sqlalchemy import or_
+
+from .models import AppUser, FixtureRound, Comp, Match, Team
 from .views import login_session
 from . import db
 
@@ -76,3 +80,49 @@ def save_results(results):
             match.home_score = home_score
             match.away_score = away_score
             db.session.commit()
+
+
+def calculate_table(teams: [Team], comp_id: int) -> typing.List[typing.Dict[str, typing.Dict[str, int]]]:
+    table = []
+    for team in teams:
+        query = (
+            db.session.query(Match)
+            .join(FixtureRound)
+            .filter(or_(Match.home_team == team.id, Match.away_team == team.id))
+            .filter_by(comp_id=comp_id)
+            .filter(Match.home_score.isnot(None))
+        )
+
+        matches = query.all()
+        won = 0
+        drawn = 0
+        lost = 0
+        goals_for = 0
+        goals_against = 0
+
+        for match in matches:
+            if (match.home_team == team.id and match.home_score > match.away_score or
+                    match.away_team == team.id and match.away_score > match.home_score):
+                won += 1
+            elif match.home_score == match.away_score:
+                drawn += 1
+            else:
+                lost += 1
+
+            goals_for += match.home_score if match.home_team == team.id else match.away_score
+            goals_against += match.home_score if match.away_team == team.id else match.away_score
+
+        table.append(
+            {team.name: {
+                'P': len(matches),
+                'W': won,
+                'D': drawn,
+                'L': lost,
+                'F': goals_for,
+                'A': goals_against,
+                'Pts': won * 3 + drawn * 1
+            }
+            }
+        )
+    return table
+

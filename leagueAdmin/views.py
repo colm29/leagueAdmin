@@ -10,7 +10,9 @@ from flask import render_template, url_for, flash, request, redirect,  make_resp
 from sqlalchemy.orm import aliased, joinedload
 
 from leagueAdmin.models import Comp, Team, NewsItem, Match, FixtureRound, Referee
-from .services import is_logged_in, create_user, update_user, get_user_id, create_fixture_round, save_results
+from .services import (
+    is_logged_in, create_user, update_user, get_user_id, create_fixture_round, save_results, calculate_table,
+)
 from leagueAdmin import app, db
 from leagueAdmin import config
 
@@ -29,6 +31,7 @@ def show_teams(comp_name):
     comp = db.session.query(Comp).filter_by(name=comp_name).one()
     teams = comp.teams
     comps = db.session.query(Comp).order_by(Comp.rank).all()
+    table = calculate_table(teams, comp.id)
     if is_logged_in():  # can create a new team if logged in
         return render_template('teams.html', teams=teams, comp=comp, comps=comps)
     else:
