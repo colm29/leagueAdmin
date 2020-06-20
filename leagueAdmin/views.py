@@ -35,7 +35,7 @@ def show_teams(comp_name):
     if is_logged_in():  # can create a new team if logged in
         return render_template('teams.html', teams=teams, comp=comp, comps=comps)
     else:
-        return render_template('public_teams.html', teams=teams, comp=comp, comps=comps)
+        return render_template('public_teams.html', teams=teams, comp=comp, comps=comps, table=table)
 
 
 @app.route('/referees')

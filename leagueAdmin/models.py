@@ -111,6 +111,7 @@ class CompReg(db.Model):
     updated_on = db.Column(db.DateTime)
     updated_by = db.Column(db.Integer, db.ForeignKey('app_user.id'))
     season_id = db.Column(db.Integer, db.ForeignKey('season.id'))
+    active = db.Column(db.Boolean, default=True, nullable=False)
 
     comp = db.relationship(Comp, backref='comp_reg', lazy=True)
     team = db.relationship(Team, backref='comp_reg', lazy=True)

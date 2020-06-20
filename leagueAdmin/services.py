@@ -113,16 +113,28 @@ def calculate_table(teams: [Team], comp_id: int) -> typing.List[typing.Dict[str,
             goals_against += match.home_score if match.away_team == team.id else match.away_score
 
         table.append(
-            {team.name: {
+            {
+                'team': team.name,
                 'P': len(matches),
                 'W': won,
                 'D': drawn,
                 'L': lost,
                 'F': goals_for,
                 'A': goals_against,
-                'Pts': won * 3 + drawn * 1
-            }
+                'Pts': won * 3 + drawn * 1,
             }
         )
-    return table
 
+    table = sorted(
+        table,
+        key=lambda x: (
+                     x['Pts'],
+                     x['F'] - x['A'],
+                     x['F']
+                 ),
+        reverse=True
+    )
+    for index, team in enumerate(table):
+        team['pos'] = index + 1
+
+    return table
