@@ -11,12 +11,38 @@
         {% endfor %}
       </div>
       </div>
-      <div class="col-4">
-        <h5 class="card-title">{{comp.name}} Teams</h5>
-        <div class="list-group list-group-flush">
-          {% for t in teams %}
-          <a href={{url_for('show_team_details', comp_name = comp.name, team_name = t.name)}} class="list-group-item list-group-item-action">{{t.name}}</a>
+      <div class="col-7">
+        <h5 class="card-title">{{comp.name}}</h5>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col"></th>
+              <th scope="col">P</th>
+              <th scope="col">W</th>
+              <th scope="col">D</th>
+              <th scope="col">L</th>
+              <th scope="col">F</th>
+              <th scope="col">A</th>
+              <th scope="col">Pts</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for pos in table %}
+            <tr>
+              <th scope="row">{{pos['pos']}}</th>
+              <td>{{pos['team']}}</td>
+              <td>{{pos['P']}}</td>
+              <td>{{pos['W']}}</td>
+              <td>{{pos['D']}}</td>
+              <td>{{pos['L']}}</td>
+              <td>{{pos['F']}}</td>
+              <td>{{pos['A']}}</td>
+              <td>{{pos['Pts']}}</td>
+            </tr>
           {% endfor %}
+          </tbody>
+        </table>
         </div>
       </div>
       {% block newButton %}
