@@ -51,12 +51,12 @@ def create_user():
 
 
 def create_fixture_round(date, comp_id):
-    # need to dynamically add season and user below
+    # TODO: need to dynamically add season and user below
     fixture_round = FixtureRound(date=date, season_id=1, comp_id=comp_id, created_by=1)
     db.session.add(fixture_round)
     db.session.flush()
     comp = db.session.query(Comp).filter_by(id=comp_id).one()
-    teams = comp.teams
+    teams = comp.teams.copy()  # don't want to delete from the relationship table with pop() below
 
     if len(teams) > 2:
         random.shuffle(teams)
