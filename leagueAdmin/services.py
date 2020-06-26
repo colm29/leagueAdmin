@@ -3,6 +3,7 @@ import random
 import typing
 
 from sqlalchemy import or_
+from sqlalchemy.orm import joinedload
 
 from .models import AppUser, FixtureRound, Comp, Match, Team
 from .views import login_session
@@ -55,8 +56,13 @@ def create_fixture_round(date, comp_id):
     fixture_round = FixtureRound(date=date, season_id=1, comp_id=comp_id, created_by=1)
     db.session.add(fixture_round)
     db.session.flush()
-    comp = db.session.query(Comp).filter_by(id=comp_id).one()
-    teams = comp.teams.copy()  # don't want to delete from the relationship table with pop() below
+    comp = (db.session.query(Comp)
+            .filter_by(id=comp_id)
+            .options(joinedload('teams')
+                     .joinedload('home_match'))
+            .one()
+            )
+    teams = comp.teams
 
     if len(teams) > 2:
         random.shuffle(teams)

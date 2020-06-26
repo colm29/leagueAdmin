@@ -100,6 +100,8 @@ class Team(db.Model):
     user1 = db.relationship(AppUser, foreign_keys=created_by)
     user2 = db.relationship(AppUser, foreign_keys=updated_by)
     comp = db.relationship(Comp, secondary='comp_reg')
+    home_match = db.relationship('Match', foreign_keys='Match.home_team')
+    away_match = db.relationship('Match', foreign_keys='Match.away_team')
 
 
 class CompReg(db.Model):
