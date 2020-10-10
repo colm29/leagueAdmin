@@ -13,7 +13,7 @@
 <div id="fb-root"></div>
 <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v3.3&appId={{fbclient_id}}&autoLogAppEvents=1"></script>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href={{url_for('show_divisions')}}>Amateur Football League</a>
+  <a class="navbar-brand" href={{url_for('show_divisions_and_news')}}>Amateur Football League</a>
   <div class="collapse navbar-collapse" id="navbarSupportedContent"></div>
 </nav>
 <div id="result"></div>
@@ -22,50 +22,27 @@
 window.fbAsyncInit = function() {
 FB.init({
   appId      : {{fbclient_id}},
-  cookie     : true,  // enable cookies to allow the server to access
-                      // the session
-  xfbml      : true,  // parse social plugins on this page
-  version    : 'v3.3' // use version 2.2
-});
-};
-// Load the SDK asynchronously
-(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_GB/sdk.js";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));
-// Here we run a very simple test of the Graph API after login is
-// successful.  See statusChangeCallback() for when this call is made.
-function sendTokenToServer() {
-  var access_token = FB.getAuthResponse()['accessToken'];
-  console.log(access_token)
-  console.log('Welcome!  Fetching your information.... ');
-  FB.api('/me', function(response) {
-    console.log('Successful login for: ' + response.name);
-   $.ajax({
-    type: 'POST',
-    url: '/fbconnect?state={{STATE}}',
-    processData: false,
-    data: access_token,
-    contentType: 'application/octet-stream; charset=utf-8',
-    success: function(result) {
-      // Handle or verify the server response if necessary.
-      if (result) {
-        $('.fb-login-button').attr('style', 'display: none');
-        $('.card').attr('style', 'display: none');
-        $('#result').html('<div class = "col-10 offset-1"><div class="card px-4 py-4"><h5 class= "text-success">Login Successful!</h5></br>'+ result + '</br><h6 class="text-muted">Redirecting...</h6></div></div>')
-       setTimeout(function() {
-        window.location.href = "/";
-      }, 4000);
-    } else {
-      $('#result').html('Failed to make a server-side call. Check your configuration and console.');
-       }
-    }
-});
-  });
-}
+
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : {{fbclient_id}},
+      cookie     : true,
+      xfbml      : true,
+      version    : 'v8.0'
+    });
+
+    FB.AppEvents.logPageView();
+
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "https://connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
 </script>
 <!--<fb:login-button scope="public_profile,email" onlogin="sendTokenToServer();">
 </fb:login-button>-->
@@ -73,7 +50,7 @@ function sendTokenToServer() {
   <div class="card">
     <h5 class="card-title pt-3" align="center">Log In</h5><br><br>
     <div class="fb-login-button" align='center' data-width="" data-size="large" data-button-type="continue_with" data-use-continue-as="true" data-scope="public_profile,email" data-onlogin="sendTokenToServer();" align='center'></div>
-    <a href={{url_for('show_divisions')}} class="btn btn-primary my-4 mx-auto" role="button" align="center">Cancel</a>
+    <a href={{url_for('show_divisions_and_news')}} class="btn btn-primary my-4 mx-auto" role="button" align="center">Cancel</a>
   </div>
 </div>
 </body>
